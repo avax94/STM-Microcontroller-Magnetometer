@@ -1,0 +1,7 @@
+[PROJECTS]
+Count=3
+Project0=C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for ARM\Examples\Microchip\Clicker 2 for CEC1302\UART\TestUart.mcpar
+Project1=..\MyProject.mcpar
+Project2=Projects.mcpar
+[ActiveProject]
+Index=2

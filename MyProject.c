@@ -1,8 +1,8 @@
 #include "lcd.h"
-
+#include "i2c.h"
 void init_io() {
   // Enable GPIOC clock
-    RCC_AHB1ENR  |= ((1UL << 2) );
+     RCC_AHB1ENRbits.GPIOCEN = 1; //  |= ((1UL << 2) );
 
     // Clear bits for ports C0 C1 C2 C3 C4 C13
     GPIOC_MODER &= ~((3UL << 2*13));
@@ -59,20 +59,39 @@ void init_io() {
     GPIOC_PUPDR   &= ~((3UL << 2*3));
     GPIOC_PUPDR   &= ~((3UL << 2*2));
     GPIOC_PUPDR   &= ~((3UL << 2*1));
-    GPIOC_PUPDR   &= ~((3UL << 2*0));}
+    GPIOC_PUPDR   &= ~((3UL << 2*0));
+}
 
+void read_who_am_i2() {
+    char result = 11;
+    char send_addr = 0x07;
+    char st[32];
+    char st2;
+    i2c_start_async();
+    i2c_send_addr_async(0x0E, 0);
+    i2c_send_async(&send_addr, 1);
+    Delay_ms(1000);
+    i2c_start_async();
+    i2c_send_addr_async(0x0E, 1);
+    i2c_recv_async(&result, 1);
 
+    Delay_ms(1000);
+    //i2c_stop();
+ 
+ 
+    IntToHex(result, st);
+    clear_lcd();
+    set_position(0, 0);
+    write_string(st);
+}
 
 
 void main() {
      init_io();
      init_lcd();
+     i2c_init();
+     read_who_am_i2();
      GPIOC_ODR = 0;
-     clear_lcd();
-     set_position(0, 0);
-     write_string("avaxe bravo");
      Delay_ms(5000);
-     set_position(1, 0);
-     write_string("BRZINAAA");
      while(1) {}
 }

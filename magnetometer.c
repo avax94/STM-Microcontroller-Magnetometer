@@ -16,8 +16,22 @@
 #define DIE_TEMP_ADDR  0x0F
 #define CTRL_REG1_ADDR 0x10
 #define CTRL_REG2_ADDR 0x11
-
 #define SENSOR_ADDR    0xC4
 
+#include "i2c.h"
 
+void read_who_am_i() {
+    char result = 0;
+    char send_addr = WHO_AM_I_ADDR;
+    i2c_start_async();
+    i2c_send_addr_async(0x0E, 0);
+    i2c_send_async(&send_addr, 1);
+    //i2c_start_async();
+    //i2c_send_addr_async(0x0E, 1);
+    //i2c_recv_async(&result, 1);
+    
+    Delay_ms(1);
+    i2c_stop();
 
+    
+}
