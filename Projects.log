@@ -8,32 +8,27 @@ hint: 88	1164	Variable 'NumberOfCyc' has been eliminated by optimizer	__Lib_Dela
 hint: 105	1164	Variable 'NumberOfCyc' has been eliminated by optimizer	__Lib_Delays.c
 diagnostics: 0	122	Compilation Started	__lib_gpio.h
 diagnostics: 870	123	Compiled Successfully	__Lib_GPIO_32F4xx_Defs.c
-hint: 23	1354	 warning: "/*" within comment	G:\Projects\MIPS\P1\i2c.c
 diagnostics: 0	122	Compilation Started	lcd.h
-hint: 0	1004	interrupt handler (interrupt2 at 0x0032)	i2c.c
-diagnostics: 339	123	Compiled Successfully	i2c.c
-hint: 187	1164	Variable 'result' has been eliminated by optimizer	i2c.c
+hint: 0	1004	interrupt handler (error_interrupt at 0x0032)	i2c.c
+diagnostics: 208	123	Compiled Successfully	i2c.c
+hint: 113	1164	Variable 'result' has been eliminated by optimizer	i2c.c
 hint: 14	1354	 warning: The macro is redefined     #define OUT_Z_MSB_ADDR 0x0D     previously macro "OUT_Z_MSB_ADDR" defined as: #define OUT_Z_MSB_ADDR  0x05 	G:\Projects\MIPS\P1\magnetometer.c
 diagnostics: 0	122	Compilation Started	lcd.h
 hint: 0	1004	interrupt handler (event_handler at 0x0031)	magnetometer.c
-warning: 192	1505	Suspicious pointer conversion	magnetometer.c
-hint: 228	1163	Variable 'c1' has been declared, but not used	magnetometer.c
-hint: 229	1163	Variable 'c2' has been declared, but not used	magnetometer.c
-hint: 230	1163	Variable 'o' has been declared, but not used	magnetometer.c
+warning: 195	1505	Suspicious pointer conversion	magnetometer.c
+hint: 230	1163	Variable 'c1' has been declared, but not used	magnetometer.c
+hint: 231	1163	Variable 'c2' has been declared, but not used	magnetometer.c
+hint: 232	1163	Variable 'o' has been declared, but not used	magnetometer.c
 hint: 0	1004	interrupt handler (interrupt_handle at 0x0038)	magnetometer.c
-warning: 303	1505	Suspicious pointer conversion	magnetometer.c
-hint: 298	1163	Variable 'xyz' has been declared, but not used	magnetometer.c
-hint: 319	1163	Variable 'o' has been declared, but not used	magnetometer.c
-diagnostics: 329	123	Compiled Successfully	magnetometer.c
-hint: 43	1164	Variable 'x' has been eliminated by optimizer	magnetometer.c
-hint: 44	1164	Variable 'y' has been eliminated by optimizer	magnetometer.c
-hint: 45	1164	Variable 'headingD' has been eliminated by optimizer	magnetometer.c
-hint: 259	1164	Variable 'x' has been eliminated by optimizer	magnetometer.c
-hint: 260	1164	Variable 'y' has been eliminated by optimizer	magnetometer.c
-hint: 261	1164	Variable 'headingD' has been eliminated by optimizer	magnetometer.c
-hint: 262	1164	Variable 'angle' has been eliminated by optimizer	magnetometer.c
-hint: 300	1164	Variable 'bitt' has been eliminated by optimizer	magnetometer.c
-hint: 318	1164	Variable 'rd' has been eliminated by optimizer	magnetometer.c
+warning: 263	1505	Suspicious pointer conversion	magnetometer.c
+hint: 260	1163	Variable 'output' has been declared, but not used	magnetometer.c
+hint: 276	1163	Variable 'o' has been declared, but not used	magnetometer.c
+diagnostics: 285	123	Compiled Successfully	magnetometer.c
+hint: 44	1164	Variable 'x' has been eliminated by optimizer	magnetometer.c
+hint: 45	1164	Variable 'y' has been eliminated by optimizer	magnetometer.c
+hint: 46	1164	Variable 'headingD' has been eliminated by optimizer	magnetometer.c
+hint: 261	1164	Variable 'bitt' has been eliminated by optimizer	magnetometer.c
+hint: 275	1164	Variable 'rd' has been eliminated by optimizer	magnetometer.c
 diagnostics: 0	122	Compilation Started	lcd.c
 diagnostics: 86	123	Compiled Successfully	lcd.c
 diagnostics: 0	122	Compilation Started	lcd.h
@@ -42,11 +37,11 @@ hint: 91	1163	Variable 'counter' has been declared, but not used	MyProject.c
 hint: 92	1163	Variable 'd' has been declared, but not used	MyProject.c
 hint: 93	1163	Variable 'output' has been declared, but not used	MyProject.c
 diagnostics: 103	123	Compiled Successfully	MyProject.c
-diagnostics: 0	127	All files Compiled in 204 ms	 
+diagnostics: 0	127	All files Compiled in 187 ms	 
 hint: 0	1144	Used RX: 15 (94%)   Free RX: 1 (6%)	Used RX: 15 (94%)   Free RX: 1 (6%)
 hint: 0	1144	Static RAM (bytes): 95   Dynamic RAM (bytes): 130973	Static RAM (bytes): 95   Dynamic RAM (bytes): 130973
-hint: 0	1144	Used ROM (bytes): 7457 (1%)  Free ROM (bytes): 1041119 (99%)	Used ROM (bytes): 7457 (1%)  Free ROM (bytes): 1041119 (99%)
+hint: 0	1144	Used ROM (bytes): 7429 (1%)  Free ROM (bytes): 1041147 (99%)	Used ROM (bytes): 7429 (1%)  Free ROM (bytes): 1041147 (99%)
 diagnostics: 0	125	Project Linked Successfully	Projects.mcpar
-diagnostics: 0	128	Linked in 359 ms	 
-diagnostics: 0	129	Project 'Projects.mcpar' completed: 1469 ms	 
-diagnostics: 0	103	Finished successfully: 28 Feb 2017, 15:58:50	Projects.mcpar
+diagnostics: 0	128	Linked in 344 ms	 
+diagnostics: 0	129	Project 'Projects.mcpar' completed: 1422 ms	 
+diagnostics: 0	103	Finished successfully: 13 Mar 2017, 13:01:18	Projects.mcpar

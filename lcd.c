@@ -31,7 +31,7 @@ volatile sbit LCD_D6 at GPIOC_ODR.B2;
 volatile sbit LCD_D7 at GPIOC_ODR.B3;
 volatile sbit LCD_RS at GPIOC_ODR.B4;
 volatile sbit LCD_EN at GPIOC_ODR.B13;
- 
+
  void init_lcd() {
      START_COMMAND;
      Delay_ms(20);

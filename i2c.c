@@ -99,6 +99,7 @@ void i2c_stop_() {
      I2C2_CR1bits.STOP_ = 1;
 }
 
+//send slave addr
 void i2c_send_addr(char addr, int r_w) {
      I2C2_DR = addr << 1 | r_w;
      address = 0;
@@ -115,12 +116,12 @@ char i2c_recv() {
 }
 
 void i2c_start_async() {
-     should_start = 1;
+     should_start = 1; //set start flag
 }
 
 void i2c_send_addr_async(char addr, int r_w) {
-     address = addr;
-     r_notw = r_w;
+     address = addr; //remember address
+     r_notw = r_w; //remember r_w flag
 }
 
 int i2c_send_async(char* d, int num) {
@@ -128,7 +129,7 @@ int i2c_send_async(char* d, int num) {
      transfer_count = num;
      
      if(should_start == 1 &&
-        address != 0) {
+        address != 0) { //if start_async and send_addr_async called before this, actually start
         should_start = 0;
         i2c_start_();
         return 0;
@@ -142,7 +143,7 @@ int i2c_recv_async(char* d, int num) {
      transfer_count = num;
 
      if(should_start == 1 &&
-        address != 0) {
+        address != 0) {  //if start_async and send_addr_async called before this, actually start
         should_start = 0;
         i2c_start_();
         return 0;
@@ -152,20 +153,18 @@ int i2c_recv_async(char* d, int num) {
 }
 
 void i2c_init() {
-//I2C2_Init_Advanced(400000, &_GPIO_MODULE_I2C2_PB10_11);
   const int maxRTime = 1000; //ns
   enabl = 1;
   should_start = 0;
   address = 0;
-  //enable peripherial clock
-  RCC_APB1ENRbits.I2C2EN = 1;
+  RCC_APB1ENRbits.I2C2EN = 1; //enable peripherial clock
   i2c_config(); //config pins for i2c
   
   NVIC_IntEnable(IVT_INT_I2C2_EV); //set interrupts
   NVIC_IntEnable(IVT_INT_I2C2_ER); //set interrupts
   EnableInterrupts(); //enable interrupts
-  //disable per to configure it
-  I2C2_CR1bits.PE = 0;
+
+  I2C2_CR1bits.PE = 0; //disable per to configure it
   I2C2_CR2bits.FREQ = 40;
 
   //set a freq
@@ -182,28 +181,28 @@ void i2c_init() {
   I2C2_OAR1bits.ADDMODE = 0;
 }
 
- void i2c_config() {
-   /* RCC Configuration */
-   /*I2C Peripheral clock enable */
-   /*SDA and SCL GPIO clock enable */
-   RCC_AHB1ENRbits.GPIOBEN = 1;
+void i2c_config() {
+  /* RCC Configuration */
+  /* I2C Peripheral clock enable */
+  /* SDA and SCL GPIO clock enable */
+  RCC_AHB1ENRbits.GPIOBEN = 1;
 
-   /* Reset I2Cx IP */
-   RCC_APB1RSTRbits.I2C2RST = 1;
-   /* Release reset signal of I2Cx IP */
-   RCC_APB1RSTRbits.I2C2RST = 0;
+  /* Reset I2Cx IP */
+  RCC_APB1RSTRbits.I2C2RST = 1;
+  /* Release reset signal of I2Cx IP */
+  RCC_APB1RSTRbits.I2C2RST = 0;
 
-   /* GPIO Configuration */
-   /*Configure I2C SCL pin */
-   GPIOB_OTYPERbits.OT10 = 1;
-   GPIOB_MODERbits.MODER10 = 2; //alternate function
-   GPIOB_PUPDRbits.PUPDR10 = 1;
-   GPIOB_OSPEEDRbits.OSPEEDR10 = 1;
-   GPIOB_AFRHbits.AFRH10 = 4; //i2c af
+  /* GPIO Configuration */
+  /* Configure I2C SCL pin */
+  GPIOB_OTYPERbits.OT10 = 1;
+  GPIOB_MODERbits.MODER10 = 2; //alternate function
+  GPIOB_PUPDRbits.PUPDR10 = 1;
+  GPIOB_OSPEEDRbits.OSPEEDR10 = 1;
+  GPIOB_AFRHbits.AFRH10 = 4; //i2c af
  
-   GPIOB_OTYPERbits.OT11 = 1;
-   GPIOB_MODERbits.MODER11 = 2; //alternate function
-   GPIOB_PUPDRbits.PUPDR11 = 1;
-   GPIOB_OSPEEDRbits.OSPEEDR11 = 1;
-   GPIOB_AFRHbits.AFRH11 = 4; //i2c af
- }
+  GPIOB_OTYPERbits.OT11 = 1;
+  GPIOB_MODERbits.MODER11 = 2; //alternate function
+  GPIOB_PUPDRbits.PUPDR11 = 1;
+  GPIOB_OSPEEDRbits.OSPEEDR11 = 1;
+  GPIOB_AFRHbits.AFRH11 = 4; //i2c af
+}

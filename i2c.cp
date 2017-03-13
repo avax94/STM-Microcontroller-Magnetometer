@@ -83,6 +83,7 @@ int enabl;
 int should_start;
 long int sreg;
 void i2c_config();
+
 int i2c_get_event() {
  long int sreg1 = I2C2_SR1;
  long int sreg2 = I2C2_SR2;
@@ -113,8 +114,8 @@ void clear_ack() {
 void clear_start() {
   I2C2_CR1bits.START  = 0;
 }
-#line 130 "G:/Projects/MIPS/P1/i2c.c"
-void interrupt2() iv IVT_INT_I2C2_ER ics ICS_AUTO {
+
+void error_interrupt() iv IVT_INT_I2C2_ER ics ICS_AUTO {
  DisableInterrupts();
  clear_lcd();
  set_position(0, 0);
@@ -160,6 +161,7 @@ void i2c_start_() {
 void i2c_stop_() {
  I2C2_CR1bits.STOP_ = 1;
 }
+
 
 void i2c_send_addr(char addr, int r_w) {
  I2C2_DR = addr << 1 | r_w;
@@ -212,14 +214,12 @@ int i2c_recv_async(char* d, int num) {
  return 1;
  }
 }
-#line 284 "G:/Projects/MIPS/P1/i2c.c"
-void i2c_init() {
 
+void i2c_init() {
  const int maxRTime = 1000;
  enabl = 1;
  should_start = 0;
  address = 0;
-
  RCC_APB1ENRbits.I2C2EN = 1;
  i2c_config();
 
@@ -244,7 +244,7 @@ void i2c_init() {
  I2C2_OAR1bits.ADDMODE = 0;
 }
 
- void i2c_config() {
+void i2c_config() {
 
 
 
@@ -268,4 +268,4 @@ void i2c_init() {
  GPIOB_PUPDRbits.PUPDR11 = 1;
  GPIOB_OSPEEDRbits.OSPEEDR11 = 1;
  GPIOB_AFRHbits.AFRH11 = 4;
- }
+}

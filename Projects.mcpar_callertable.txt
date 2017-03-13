@@ -50,7 +50,7 @@ event_handler
 			set_position
 			write_string
 				write_lcd
-interrupt2
+error_interrupt
 	DisableInterrupts
 	EnableInterrupts
 	clear_lcd

@@ -78,8 +78,8 @@ void read_who_am_i2() {
 
     Delay_ms(1000);
     //i2c_stop();
- 
- 
+
+
     IntToHex(result, st);
     clear_lcd();
     set_position(0, 0);
@@ -94,7 +94,7 @@ void main() {
      init_io();
      init_lcd();
      i2c_init();
-     
+
      init_magnetometer();
 
      while(1) {
