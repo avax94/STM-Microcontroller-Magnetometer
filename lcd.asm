@@ -701,13 +701,13 @@ IT	AL
 BAL	L_set_position54
 ; y end address is: 4 (R1)
 L_set_position51:
-;lcd.c,64 :: 		GPIOC_ODR = W_RAM;
+;lcd.c,64 :: 		GPIOC_ODR = 0;
 ; pos start address is: 0 (R0)
-MOVS	R3, #16
+MOVS	R3, #0
 MOVW	R2, #lo_addr(GPIOC_ODR+0)
 MOVT	R2, #hi_addr(GPIOC_ODR+0)
 STR	R3, [R2, #0]
-;lcd.c,65 :: 		send_data(0x80 | pos);
+;lcd.c,65 :: 		send_word(0x80 | pos);
 MOVW	R2, #lo_addr(GPIOC_ODR+0)
 MOVT	R2, #hi_addr(GPIOC_ODR+0)
 LDR	R2, [R2, #0]
@@ -720,9 +720,10 @@ MOVT	R2, #hi_addr(GPIOC_ODR+0)
 LDR	R3, [R2, #0]
 MVN	R2, #15
 AND	R2, R3, R2, LSL #0
-ORR	R2, R2, #128
-ORR	R3, R2, R0, LSL #0
-; pos end address is: 0 (R0)
+ORR	R3, R2, #128
+LSRS	R2, R0, #4
+UXTB	R2, R2
+ORRS	R3, R2
 MOVW	R2, #lo_addr(GPIOC_ODR+0)
 MOVT	R2, #hi_addr(GPIOC_ODR+0)
 STR	R3, [R2, #0]
@@ -734,14 +735,60 @@ ANDS	R3, R2
 MOVW	R2, #lo_addr(GPIOC_ODR+0)
 MOVT	R2, #hi_addr(GPIOC_ODR+0)
 STR	R3, [R2, #0]
-;lcd.c,66 :: 		Delay_ms(20);
-MOVW	R7, #16723
-MOVT	R7, #3
+MOVW	R7, #9
+MOVT	R7, #0
 NOP
 NOP
 L_set_position55:
 SUBS	R7, R7, #1
 BNE	L_set_position55
+NOP
+NOP
+MOVW	R2, #lo_addr(GPIOC_ODR+0)
+MOVT	R2, #hi_addr(GPIOC_ODR+0)
+LDR	R2, [R2, #0]
+ORR	R3, R2, #8192
+MOVW	R2, #lo_addr(GPIOC_ODR+0)
+MOVT	R2, #hi_addr(GPIOC_ODR+0)
+STR	R3, [R2, #0]
+MOVW	R2, #lo_addr(GPIOC_ODR+0)
+MOVT	R2, #hi_addr(GPIOC_ODR+0)
+LDR	R3, [R2, #0]
+MVN	R2, #15
+AND	R2, R3, R2, LSL #0
+ORR	R3, R2, #128
+AND	R2, R0, #15
+UXTB	R2, R2
+; pos end address is: 0 (R0)
+ORRS	R3, R2
+MOVW	R2, #lo_addr(GPIOC_ODR+0)
+MOVT	R2, #hi_addr(GPIOC_ODR+0)
+STR	R3, [R2, #0]
+MOVW	R2, #lo_addr(GPIOC_ODR+0)
+MOVT	R2, #hi_addr(GPIOC_ODR+0)
+LDR	R3, [R2, #0]
+MVN	R2, #8192
+ANDS	R3, R2
+MOVW	R2, #lo_addr(GPIOC_ODR+0)
+MOVT	R2, #hi_addr(GPIOC_ODR+0)
+STR	R3, [R2, #0]
+MOVW	R7, #9
+MOVT	R7, #0
+NOP
+NOP
+L_set_position57:
+SUBS	R7, R7, #1
+BNE	L_set_position57
+NOP
+NOP
+;lcd.c,66 :: 		Delay_ms(20);
+MOVW	R7, #16723
+MOVT	R7, #3
+NOP
+NOP
+L_set_position59:
+SUBS	R7, R7, #1
+BNE	L_set_position59
 NOP
 NOP
 NOP
@@ -791,9 +838,9 @@ MOVW	R7, #9
 MOVT	R7, #0
 NOP
 NOP
-L_write_lcd57:
+L_write_lcd61:
 SUBS	R7, R7, #1
-BNE	L_write_lcd57
+BNE	L_write_lcd61
 NOP
 NOP
 MOVW	R1, #lo_addr(GPIOC_ODR+0)
@@ -827,19 +874,19 @@ MOVW	R7, #9
 MOVT	R7, #0
 NOP
 NOP
-L_write_lcd59:
+L_write_lcd63:
 SUBS	R7, R7, #1
-BNE	L_write_lcd59
+BNE	L_write_lcd63
 NOP
 NOP
-;lcd.c,72 :: 		Delay_us(20);
-MOVW	R7, #211
+;lcd.c,72 :: 		Delay_ms(2);
+MOVW	R7, #21331
 MOVT	R7, #0
 NOP
 NOP
-L_write_lcd61:
+L_write_lcd65:
 SUBS	R7, R7, #1
-BNE	L_write_lcd61
+BNE	L_write_lcd65
 NOP
 NOP
 NOP
@@ -858,12 +905,12 @@ STR	LR, [SP, #0]
 MOV	R3, R0
 ; c end address is: 0 (R0)
 ;lcd.c,76 :: 		while(*c != '\0') {
-L_write_string63:
+L_write_string67:
 ; c start address is: 12 (R3)
 LDRB	R1, [R3, #0]
 CMP	R1, #0
 IT	EQ
-BEQ	L_write_string64
+BEQ	L_write_string68
 ;lcd.c,77 :: 		write_lcd(*c);
 LDRB	R1, [R3, #0]
 UXTB	R0, R1
@@ -873,8 +920,8 @@ ADDS	R3, R3, #1
 ;lcd.c,79 :: 		}
 ; c end address is: 12 (R3)
 IT	AL
-BAL	L_write_string63
-L_write_string64:
+BAL	L_write_string67
+L_write_string68:
 ;lcd.c,80 :: 		}
 L_end_write_string:
 LDR	LR, [SP, #0]
@@ -916,9 +963,9 @@ MOVW	R7, #9
 MOVT	R7, #0
 NOP
 NOP
-L_clear_lcd65:
+L_clear_lcd69:
 SUBS	R7, R7, #1
-BNE	L_clear_lcd65
+BNE	L_clear_lcd69
 NOP
 NOP
 MOVW	R0, #lo_addr(GPIOC_ODR+0)
@@ -949,12 +996,12 @@ MOVW	R7, #9
 MOVT	R7, #0
 NOP
 NOP
-L_clear_lcd67:
+L_clear_lcd71:
 SUBS	R7, R7, #1
-BNE	L_clear_lcd67
+BNE	L_clear_lcd71
 NOP
 NOP
-;lcd.c,85 :: 		}
+;lcd.c,86 :: 		}
 L_end_clear_lcd:
 BX	LR
 ; end of _clear_lcd

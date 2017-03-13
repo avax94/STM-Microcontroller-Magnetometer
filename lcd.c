@@ -61,19 +61,19 @@ void set_position(char x, char y){
         default: pos = y;
     }
 
-    GPIOC_ODR = W_RAM;
-    send_data(0x80 | pos);
+    GPIOC_ODR = 0;
+    send_word(0x80 | pos);
     Delay_ms(20);
 }
 
 void write_lcd(char c) {
     GPIOC_ODR = W_RAM;
     send_word(c);
-    Delay_us(20);
+    Delay_ms(2);
 }
 
 void write_string(char* c) {
-     while(*c != '\0') {
+      while(*c != '\0') {
               write_lcd(*c);
               c++;
      }
@@ -82,5 +82,5 @@ void write_string(char* c) {
 void clear_lcd() {
      START_COMMAND;
      send_word(LCD_CLEAR_DISPLAY);
+     //Delay_ms();
 }
-

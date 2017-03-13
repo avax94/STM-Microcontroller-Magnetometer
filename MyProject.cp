@@ -9,11 +9,9 @@ void write_lcd(char c);
 void set_position(char x, char y);
 void init_lcd();
 #line 1 "g:/projects/mips/p1/i2c.h"
-
-
-
+#line 23 "g:/projects/mips/p1/i2c.h"
 void i2c_start_();
-void i2c_stop();
+void i2c_stop_();
 void i2c_send_addr(char addr, int r_w);
 void i2c_send(char d);
 char i2c_recv();
@@ -24,12 +22,53 @@ int i2c_recv_async(char* d, int num);
 void i2c_init();
 void i2c_config();
 void i2c_stop();
+void set_ack();
+void clear_start();
+void clear_ack();
+int i2c_get_event();
+
+enum states {STARTING, ADDRESS_SENT, RECEIVED, TRANSMITTED, STOPING, DEFAULT} ;
+
+extern volatile sbit ADDMODE_I2C;
+extern volatile sbit RxNE_I2C;
+extern volatile sbit TxE_I2C;
+extern volatile sbit ADDR_I2C;
+
+extern volatile sbit TRA_I2C;
+
 extern int state_;
-#line 3 "G:/Projects/MIPS/P1/MyProject.c"
+extern int cnt;
+extern char stt[];
+extern int dummy1, dummy2;
+extern int transfer_count;
+extern char* transfer;
+extern int curr_transfer;
+extern char address;
+extern char reg_addr;
+extern int r_notw;
+extern int enabl;
+extern int should_start;
+extern long int sreg;
+
+extern int state_;
+#line 1 "g:/projects/mips/p1/magnetometer.h"
+
+
+void read_who_am_i();
+void test_rd_write();
+void init_magnetometer();
+void poll_value();
+void dealwithit();
+void interrupt_handle();
+extern int reading_xyz;
+extern int called;
+void debug(char* d);
+void read_reg(char reg, char* d, int cnt);
+#line 4 "G:/Projects/MIPS/P1/MyProject.c"
 void init_io() {
 
  RCC_AHB1ENRbits.GPIOCEN = 1;
-
+ RCC_AHB1LPENRbits.GPIOCLPEN = 1;
 
  GPIOC_MODER &= ~((3UL << 2*13));
  GPIOC_MODER &= ~((3UL << 2*4));
@@ -45,7 +84,7 @@ void init_io() {
  GPIOC_MODER |= ((1UL << 2*2));
  GPIOC_MODER |= ((1UL << 2*1));
  GPIOC_MODER |= ((1UL << 2*0));
-#line 33 "G:/Projects/MIPS/P1/MyProject.c"
+#line 34 "G:/Projects/MIPS/P1/MyProject.c"
  GPIOC_OTYPER &= ~((3UL << 13));
  GPIOC_OTYPER &= ~((3UL << 4));
  GPIOC_OTYPER &= ~((3UL << 3));
@@ -103,11 +142,16 @@ void read_who_am_i2() {
 
 
 void main() {
+ int counter;
+ char d[6];
+ char output[5];
  init_io();
  init_lcd();
  i2c_init();
- read_who_am_i2();
- GPIOC_ODR = 0;
- Delay_ms(5000);
- while(1) {}
+
+ init_magnetometer();
+
+ while(1) {
+ asm{ WFI; }
+ }
 }

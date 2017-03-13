@@ -1,9 +1,10 @@
 #include "lcd.h"
 #include "i2c.h"
+#include "magnetometer.h"
 void init_io() {
-  // Enable GPIOC clock
-     RCC_AHB1ENRbits.GPIOCEN = 1; //  |= ((1UL << 2) );
-
+    // Enable GPIOC clock
+    RCC_AHB1ENRbits.GPIOCEN = 1; //  |= ((1UL << 2) );
+    RCC_AHB1LPENRbits.GPIOCLPEN = 1;
     // Clear bits for ports C0 C1 C2 C3 C4 C13
     GPIOC_MODER &= ~((3UL << 2*13));
     GPIOC_MODER &= ~((3UL << 2*4));
@@ -87,11 +88,16 @@ void read_who_am_i2() {
 
 
 void main() {
+     int counter;
+     char d[6];
+     char output[5];
      init_io();
      init_lcd();
      i2c_init();
-     read_who_am_i2();
-     GPIOC_ODR = 0;
-     Delay_ms(5000);
-     while(1) {}
+     
+     init_magnetometer();
+
+     while(1) {
+            asm{ WFI; }
+     }
 }

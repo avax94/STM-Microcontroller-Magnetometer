@@ -1,24 +1,11 @@
 #include "lcd.h"
 #include "i2c.h"
-#define ACKN I2C2_CR1bits.ACK
-#define START_TR I2C2_CR1bits.START
-#define STOP I2C2_CR1bits.STOP_
-#define NOSTRETCH_I2C I2C2_CR1bits.NOSTRETCH
-#define ITBUFEN_I2C I2C2_CR2bits.ITBUFEN
-#define ITEVTEN_I2C I2C2_CR2bits.ITEVTEN
-
-#define BUSY I2C2_SR2bits.BUSY
-#define MSL I2C2_SR2bits.MSL
-#define TRA I2C2_SR2bits.TRA
-#define SB I2C2_SR1bits.SB
+#include "magnetometer.h"
 
 volatile sbit ADDMODE_I2C at I2C2_OAR1.B15;
 volatile sbit RxNE_I2C at I2C2_SR1.B6;
 volatile sbit TxE_I2C at I2C2_SR1.B7;
-volatile sbit BTF_I2C at I2C2_SR1.B2;
 volatile sbit ADDR_I2C at I2C2_SR1.B1;
-
-volatile sbit TRA_I2C at I2C2_SR2.B2;
 int state_ = 0;
 int cnt = 0;
 char stt[5];
@@ -26,112 +13,53 @@ int dummy1, dummy2;
 int transfer_count;
 char* transfer;
 int curr_transfer;
+char lout[9];
 char address;
-char reg_addr;
 int r_notw;
 int enabl;
 int should_start;
+long int sreg;
 void i2c_config();
-enum {STARTING, ADDRESS_SENT, RECEIVED, TRANSMITTED, STOPING, DEFAULT} states;
+
 int i2c_get_event() {
-  if(SB == 1 &&
-     BUSY == 1 &&
-     MSL == 1) { //EV5
+  long int sreg1 = I2C2_SR1;
+  long int sreg2 = I2C2_SR2;
+  sreg = (sreg2 << 16) | sreg1;
+  if((sreg & STARTING_EV5) == STARTING_EV5) { //EV5
       return STARTING;
   } else if(I2C2_SR1bits.STOPF == 1) {
       return STOPING;
-  } else if(
-          ADDR_I2C == 1
-          ) { //EV6
+  } else if((sreg & ADDR_SENT_EV6) == ADDR_SENT_EV6) { //EV6
       return ADDRESS_SENT;
-  } else if(TRA == 1 &&
-            BUSY == 1 &&
-            MSL == 1 &&
-            TxE_I2C == 1) { //EV8
+  } else if((sreg & TRANSMITTED_EV8) == TRANSMITTED_EV8) { //EV8
       return TRANSMITTED;
-  } else if(BUSY == 1 &&
-            MSL == 1 &&
-            RxNE_I2C) {
+  } else if((sreg & RECEIVED_EV7) == RECEIVED_EV7) { //EV8
       return RECEIVED;
   } else {
       return DEFAULT;
   }
 }
-void interrupt() iv  IVT_INT_I2C2_EV ics ICS_AUTO {
-    DisableInterrupts();
 
-    switch(i2c_get_event()) {
-    case STARTING:
-         state_ = 1;
-         ACKN = 1;
-         i2c_send_addr(address, r_notw);
-         START_TR = 0;
-         break;
-    case ADDRESS_SENT:
-          state_ = 2;
-     
-         if(transfer_count == 1) {
-            ACKN = 0;
-         } else {
-            ACKN = 1;
-         }
-
-         dummy1 = I2C2_SR1;
-         dummy2 = I2C2_SR2;
-
-         cnt = cnt + 1;
-         curr_transfer = 0;
-         break;
-    case TRANSMITTED:
-
-         if(curr_transfer != transfer_count) { //transmiter
-
-              i2c_send(transfer[curr_transfer]);
-              state_ = 3;
-              if (curr_transfer != transfer_count)
-                  curr_transfer = curr_transfer +  1;
-         } else {    
-           i2c_stop();
-         }
-    case RECEIVED:
-
-          if(curr_transfer != transfer_count) {
-            transfer[curr_transfer] = i2c_recv();
-            curr_transfer = curr_transfer + 1;
-            state_ = 5;
-
-            if(curr_transfer+1 == transfer_count || curr_transfer == transfer_count) {
-                enabl = 0;
-               ACKN = 0;
-                i2c_stop();
-                state_ = 6;
-            }
-         } else {
-            i2c_stop();
-         }
-         
-         break;
-    case STOPING:
-         if(I2C2_SR1bits.STOPF == 1)
-             I2C2_CR1bits.STOP_ = 0;
-         break;
-    case DEFAULT:
-            break;
-    }
-    if(enabl == 1)
-    EnableInterrupts();
+void set_ack() {
+     ACKN = 1;
 }
 
-void interrupt2() iv  IVT_INT_I2C2_ER ics ICS_AUTO {
-  DisableInterrupts();
-    
-    clear_lcd();
-    set_position(0,0);
+void clear_ack() {
+     ACKN = 0;
+}
 
-      write_string("AVAX");
+void clear_start() {
+     START_TR = 0;
+}
 
+void error_interrupt() iv  IVT_INT_I2C2_ER ics ICS_AUTO {
+   DisableInterrupts();
+   clear_lcd();
+   set_position(0, 0);
+   write_string("ERROR: ");
   if(I2C2_SR1bits.BERR == 1){
    write_string("BERR");
+   EnableInterrupts();
   }
   
    if(I2C2_SR1bits.AF == 1){
@@ -157,6 +85,9 @@ void interrupt2() iv  IVT_INT_I2C2_ER ics ICS_AUTO {
    if(I2C2_SR1bits.SMBALERT == 1){
     write_string("SMBALERT");
   }
+  
+  Delay_ms(1000);
+  EnableInterrupts();
 }
 
 void i2c_start_() {
@@ -164,7 +95,7 @@ void i2c_start_() {
    START_TR = 1;
 }
 
-void i2c_stop() {
+void i2c_stop_() {
      I2C2_CR1bits.STOP_ = 1;
 }
 
@@ -178,7 +109,7 @@ void i2c_send(char d) {
 }
 
 char i2c_recv() {
-     char result = I2C2_DRbits.DR;
+     char result = (char)I2C2_DR;
      
      return result;
 }
@@ -198,6 +129,7 @@ int i2c_send_async(char* d, int num) {
      
      if(should_start == 1 &&
         address != 0) {
+        should_start = 0;
         i2c_start_();
         return 0;
      } else {
@@ -219,61 +151,6 @@ int i2c_recv_async(char* d, int num) {
      }
 }
 
-/*void i2c_transaction(char* d, int size, char addr, int r_w) {
-    char res[2];
-     transfer = d;
-     transfer_count = size;
-     address = addr;
-     r_notw = r_w;
-      /*   if(I2C2_Start() != 0) {
-         clear_lcd();
-         set_position(0, 0);
-         write_string("START FAIL");
-      }
-       enabl = I2C2_Write(0x0D, res, 2, END_MODE_);          // write num_bytes, stored in data_, and issue a stop condition.
-        if(enabl != 0)
-        {
-         clear_lcd();
-         set_position(0, 0);
-         write_string("IPAK ERROR");
-        }           else {
-        clear_lcd();
-         set_position(0, 0);
-         write_string("ALL GOOD");
-
-        }      */ /*
-    address = 0x0E << 1;
-    ACKN = 0;
-    START_TR = 1;  clear_lcd();
-
-     while(I2C2_SR1bits.SB == 0);
-     ACKN = 1;
-       I2C2_DR = address;
-
-     clear_lcd();
-     set_position(0,0);
-     write_string("Startovao sam!");
-     while(I2C2_SR1bits.ADDR == 0);
-     clear_lcd();
-     set_position(0,0);
-     write_string("ADDR je 0");
-     I2C2_SR1.B0;
-     I2C2_SR2.B0;
-
-     while(I2C2_SR1bits.TxE == 0);
-     clear_lcd();
-     set_position(0,0);
-     write_string("BTF se setuje");
-}
-
-void i2c_send(char* d, int size, char addr) {
-     i2c_transaction(d, size, addr, 0);
-}
-
-void i2c_recv(char* d, int size, char addr) {
-     i2c_transaction(d, size, addr, 1);
-}
-*/
 void i2c_init() {
 //I2C2_Init_Advanced(400000, &_GPIO_MODULE_I2C2_PB10_11);
   const int maxRTime = 1000; //ns
@@ -285,7 +162,6 @@ void i2c_init() {
   i2c_config(); //config pins for i2c
   
   NVIC_IntEnable(IVT_INT_I2C2_EV); //set interrupts
-
   NVIC_IntEnable(IVT_INT_I2C2_ER); //set interrupts
   EnableInterrupts(); //enable interrupts
   //disable per to configure it
@@ -297,7 +173,7 @@ void i2c_init() {
   //set Thigh = 0.9 us = 900 ns and TLow = 1.8
   I2C2_CCRbits.CCR = 34;
   I2C2_TRISEbits.TRISE = I2C2_CR2bits.FREQ*1000 / maxRTime + 1;
- I2C2_CR1bits.PE = 1;
+  I2C2_CR1bits.PE = 1;
   NOSTRETCH_I2C = 0;
   I2C2_CR2bits.ITERREN = 1;
   ITBUFEN_I2C = 1;
@@ -328,6 +204,6 @@ void i2c_init() {
    GPIOB_OTYPERbits.OT11 = 1;
    GPIOB_MODERbits.MODER11 = 2; //alternate function
    GPIOB_PUPDRbits.PUPDR11 = 1;
-   GPIOB_OSPEEDRbits.OSPEEDR10 = 1;
+   GPIOB_OSPEEDRbits.OSPEEDR11 = 1;
    GPIOB_AFRHbits.AFRH11 = 4; //i2c af
  }

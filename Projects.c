@@ -102,10 +102,14 @@ send_command(0x80); // row 1 column 1
 
 void main(void)
 {
+char d[6];
 WDTCTL = WDTPW + WDTHOLD; // stop watchdog timer
 lcd_init();
 send_string("Manpreet Singh");
 send_command(0xC0);
 send_string("Minhas");
-while(1){}
+while(1){
+ read_xyz(d);
+ Delay_ms(250);
+}
 }
