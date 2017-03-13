@@ -115,12 +115,13 @@ char i2c_recv() {
 }
 
 void i2c_start_async() {
-     should_start = 1;
+     should_start = 1; //set start flag
 }
 
+//send slave addr
 void i2c_send_addr_async(char addr, int r_w) {
-     address = addr;
-     r_notw = r_w;
+     address = addr; // remember slave address for sending later
+     r_notw = r_w; // remember r_w flag
 }
 
 int i2c_send_async(char* d, int num) {
@@ -128,11 +129,11 @@ int i2c_send_async(char* d, int num) {
      transfer_count = num;
      
      if(should_start == 1 &&
-        address != 0) {
+        address != 0) { // really start if start_async and send_addr_async are called before
         should_start = 0;
         i2c_start_();
         return 0;
-     } else {
+     } else { // return error flag
         return 1;
      }
 }
@@ -142,30 +143,27 @@ int i2c_recv_async(char* d, int num) {
      transfer_count = num;
 
      if(should_start == 1 &&
-        address != 0) {
+        address != 0) { // really start if start_async and send_addr_async are called before
         should_start = 0;
         i2c_start_();
         return 0;
-     } else {
+     } else { // return error flag
         return 1;
      }
 }
 
 void i2c_init() {
-//I2C2_Init_Advanced(400000, &_GPIO_MODULE_I2C2_PB10_11);
   const int maxRTime = 1000; //ns
   enabl = 1;
   should_start = 0;
   address = 0;
-  //enable peripherial clock
-  RCC_APB1ENRbits.I2C2EN = 1;
-  i2c_config(); //config pins for i2c
+  RCC_APB1ENRbits.I2C2EN = 1; // enable peripherial clock
+  i2c_config(); // config pins for i2c
   
-  NVIC_IntEnable(IVT_INT_I2C2_EV); //set interrupts
-  NVIC_IntEnable(IVT_INT_I2C2_ER); //set interrupts
-  EnableInterrupts(); //enable interrupts
-  //disable per to configure it
-  I2C2_CR1bits.PE = 0;
+  NVIC_IntEnable(IVT_INT_I2C2_EV); // set interrupts
+  NVIC_IntEnable(IVT_INT_I2C2_ER); // set interrupts
+  EnableInterrupts(); // enable interrupts
+  I2C2_CR1bits.PE = 0; // disable per to configure it
   I2C2_CR2bits.FREQ = 40;
 
   //set a freq
