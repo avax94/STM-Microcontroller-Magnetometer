@@ -6,8 +6,60 @@ volatile sbit LCD_D6 at GPIOC_ODR.B2;
 volatile sbit LCD_D7 at GPIOC_ODR.B3;
 volatile sbit LCD_RS at GPIOC_ODR.B4;
 volatile sbit LCD_EN at GPIOC_ODR.B13;
+void init_io() {
+
+ RCC_AHB1ENRbits.GPIOCEN = 1;
+ RCC_AHB1LPENRbits.GPIOCLPEN = 1;
+
+ GPIOC_MODER &= ~((3UL << 2*13));
+ GPIOC_MODER &= ~((3UL << 2*4));
+ GPIOC_MODER &= ~((3UL << 2*3));
+ GPIOC_MODER &= ~((3UL << 2*2));
+ GPIOC_MODER &= ~((3UL << 2*1));
+ GPIOC_MODER &= ~((3UL << 2*0));
+
+
+ GPIOC_MODER |= ((1UL << 2*13));
+ GPIOC_MODER |= ((1UL << 2*4));
+ GPIOC_MODER |= ((1UL << 2*3));
+ GPIOC_MODER |= ((1UL << 2*2));
+ GPIOC_MODER |= ((1UL << 2*1));
+ GPIOC_MODER |= ((1UL << 2*0));
+
+ GPIOC_OTYPER &= ~((3UL << 13));
+ GPIOC_OTYPER &= ~((3UL << 4));
+ GPIOC_OTYPER &= ~((3UL << 3));
+ GPIOC_OTYPER &= ~((3UL << 2));
+ GPIOC_OTYPER &= ~((3UL << 1));
+ GPIOC_OTYPER &= ~((3UL << 0));
+
+
+ GPIOC_OSPEEDR &= ~((3UL << 2*13));
+ GPIOC_OSPEEDR &= ~((3UL << 2*4));
+ GPIOC_OSPEEDR &= ~((3UL << 2*3));
+ GPIOC_OSPEEDR &= ~((3UL << 2*2));
+ GPIOC_OSPEEDR &= ~((3UL << 2*1));
+ GPIOC_OSPEEDR &= ~((3UL << 2*0));
+
+
+ GPIOC_OSPEEDR |= ((3UL << 2*13));
+ GPIOC_OSPEEDR |= ((3UL << 2*4));
+ GPIOC_OSPEEDR |= ((3UL << 2*3));
+ GPIOC_OSPEEDR |= ((3UL << 2*2));
+ GPIOC_OSPEEDR |= ((3UL << 2*1));
+ GPIOC_OSPEEDR |= ((3UL << 2*0));
+
+
+ GPIOC_PUPDR &= ~((3UL << 2*13));
+ GPIOC_PUPDR &= ~((3UL << 2*4));
+ GPIOC_PUPDR &= ~((3UL << 2*3));
+ GPIOC_PUPDR &= ~((3UL << 2*2));
+ GPIOC_PUPDR &= ~((3UL << 2*1));
+ GPIOC_PUPDR &= ~((3UL << 2*0));
+}
 
  void init_lcd() {
+ init_io();
   GPIOC_ODR = 0x0 ;
  Delay_ms(20);
   GPIOC_ODR |= (1UL << 13) ; GPIOC_ODR = (GPIOC_ODR & ~0xF) | 0x33 >> 4 ; GPIOC_ODR &= ~(1UL << 13) ; ; Delay_us (1); GPIOC_ODR |= (1UL << 13) ; GPIOC_ODR = (GPIOC_ODR & ~0xF) | 0x33 & 0xF ; GPIOC_ODR &= ~(1UL << 13) ; ; Delay_us(1); ;
@@ -57,5 +109,4 @@ void write_string(char* c) {
 void clear_lcd() {
   GPIOC_ODR = 0x0 ;
   GPIOC_ODR |= (1UL << 13) ; GPIOC_ODR = (GPIOC_ODR & ~0xF) | 0x01 >> 4 ; GPIOC_ODR &= ~(1UL << 13) ; ; Delay_us (1); GPIOC_ODR |= (1UL << 13) ; GPIOC_ODR = (GPIOC_ODR & ~0xF) | 0x01 & 0xF ; GPIOC_ODR &= ~(1UL << 13) ; ; Delay_us(1); ;
-
 }

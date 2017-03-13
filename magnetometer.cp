@@ -76,8 +76,11 @@ void calcAngle(char *xyz) {
  int y;
  float headingD;
  int angle;
+
  x = (((int)xyz[0]) << 8) | xyz[1];
  y = (((int)xyz[2]) << 8) | xyz[3];
+
+
  y -= (int)((0x0000029A + 0x00000438) >> 1);
  x -= (int)((0x0000FD00 + 0x0000FB4F) >> 1);
  heading = atan2(y, x);
@@ -93,6 +96,8 @@ void calcAngle(char *xyz) {
  if(angle > 180) {
  angle = angle - 360;
  }
+
+
  IntToStr(angle, output);
  debug(Ltrim(output));
 }
@@ -101,7 +106,6 @@ void event_handler() iv IVT_INT_I2C2_EV ics ICS_AUTO {
  DisableInterrupts();
  switch(i2c_get_event()) {
  case STARTING:
- state_ = 1;
   I2C2_CR1bits.ACK  = 1;
 
  if(reg_send == 0) {
@@ -111,21 +115,15 @@ void event_handler() iv IVT_INT_I2C2_EV ics ICS_AUTO {
  i2c_send_addr(address, r_notw);
  }
 
-
   I2C2_CR1bits.START  = 0;
-
  break;
  case ADDRESS_SENT:
- state_ = 2;
-
-
  dummy1 = I2C2_SR1;
  dummy2 = I2C2_SR2;
 
  curr_transfer = 0;
  break;
  case TRANSMITTED:
- state_ = 3;
  if(reg_send == 1) {
  if(curr_transfer != transfer_count) {
  i2c_send(transfer[curr_transfer]);
@@ -140,6 +138,7 @@ void event_handler() iv IVT_INT_I2C2_EV ics ICS_AUTO {
  } else if( I2C2_SR1bits.BTF  == 1) {
  reg_send = 1;
  curr_transfer = 0;
+
  if(r_notw == 1)
  i2c_start_();
  }
@@ -147,18 +146,14 @@ void event_handler() iv IVT_INT_I2C2_EV ics ICS_AUTO {
  break;
  case RECEIVED:
  if(curr_transfer != transfer_count) {
-
-
  transfer[curr_transfer] = i2c_recv();
  curr_transfer = curr_transfer + 1;
 
  if(curr_transfer == transfer_count) {
   I2C2_CR1bits.ACK  = 0;
  i2c_stop_();
- state_ = 6;
- }
-
  state_ = 5;
+ }
 
  if(curr_transfer == transfer_count) {
  if(reading_xyz == 1) {
@@ -181,17 +176,19 @@ void event_handler() iv IVT_INT_I2C2_EV ics ICS_AUTO {
  EnableInterrupts();
 }
 
+
 void send_reg_addr_async(char reg_a) {
  reg_send = 0;
  reg_addr = reg_a;
 }
+
 
 void read_who_am_i() {
  char result = 0;
  char st[5];
  cnt = 0;
  EnableInterrupts();
- debug("Uso sam ovde...");
+ debug("Entered...");
  Delay_ms(1000);
  i2c_start_async();
  send_reg_addr_async( 0x07 );
@@ -217,6 +214,7 @@ void write_reg(char reg, char* d, int cnt) {
  i2c_send_async(d, cnt);
 }
 
+
 int read_xyz(char *d) {
  int dreg = 1;
  int bitt = 0;
@@ -241,7 +239,6 @@ void configure_exti() {
  GPIOE_OTYPERbits.OT10 = 0x0;
  GPIOE_OSPEEDRbits.OSPEEDR10 = 0x2;
 
-
  SYSCFG_EXTICR3bits.EXTI10 = 0x4;
  EXTI_FTSR = 0x00000000;
  EXTI_RTSR = 0x00000400;
@@ -250,9 +247,7 @@ void configure_exti() {
  EnableInterrupts();
 
  read_xyz(xyz);
- }
-
-
+}
 
 void init_magnetometer() {
  char creg1 = 0b10001001;
@@ -267,9 +262,9 @@ void init_magnetometer() {
  Delay_us(500);
  is_configured = 1;
  configure_exti();
+}
 
- }
- void interrupt_handle() iv IVT_INT_EXTI15_10 ics ICS_AUTO {
+void interrupt_handle() iv IVT_INT_EXTI15_10 ics ICS_AUTO {
  if(is_configured == 0) {
  return;
  }
@@ -277,54 +272,14 @@ void init_magnetometer() {
  EXTI_PR.B10 = 1;
  reading_xyz = 1;
  read_reg( 0x01 , xyz, 6);
- }
+}
 
- void printToLCD(char *d) {
+void printToLCD(char *d) {
  write_lcd(d[2]);
  write_lcd(d[3]);
- }
-void dealwithit() {
- char xyz[6];
- char output[5];
- float heading;
- float declAngle = 0.069;
- int x;
- int y;
- float headingD;
- int angle;
-
- xyz[0] = xyz[1] = xyz[2] = xyz[3] = xyz[4] = xyz[5] = 0;
-
- Delay_ms(2);
-
-x = (((int)xyz[0]) << 8) | xyz[1];
- y = (((int)xyz[2]) << 8) | xyz[3];
-
- y -= (int)((0x0000029A + 0x00000438) >> 1);
- x -= (int)((0x0000FD00 + 0x0000FB4F) >> 1);
-
-
-
-
-
-
-
- heading = atan2(y, x);
- heading = heading - declAngle;
-
-
- if(heading < 0) heading += 2*3.14;
- if(heading < 0) heading += 2*3.14;
-
- if(heading > 2*3.14)heading -= 2*3.14;
- headingD = heading * 180 / 3.14;
- angle = (int)headingD;
-
- IntToStr(angle, output);
- clear_lcd();
- set_position(0, 0);
- write_string(Ltrim(output));
 }
+
+
 void poll_value() {
  int dreg;
  char xyz[6];
@@ -334,17 +289,14 @@ void poll_value() {
  dreg = 1;
  read_reg( 0x00 , &dreg, 1);
  Delay_ms(2);
- IntToHex(dreg, output);
-
  bitt = dreg >> 3 & 1;
  if(bitt != 0) {
- dealwithit();
+ calcAngle(xyz);
  Delay_ms(250);
  }
-
-
  }
 }
+
 
 void test_rd_write() {
  char xyz[6], rd = 3;
@@ -357,5 +309,4 @@ void test_rd_write() {
  Delay_ms(2000);
  IntToHex(creg1, xyz);
  debug(xyz);
-
 }

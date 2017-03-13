@@ -80,7 +80,7 @@ void event_handler() iv  IVT_INT_I2C2_EV ics ICS_AUTO {
              I2C2_DR = address << 1 | 0;
          }
          else {
-             i2c_send_addr(address, r_notw); //if we already sent register address we now do read or right
+             i2c_send_addr(address, r_notw); //if we already sent register address we now do read or write
          }
 
          START_TR = 0; //clear start flag

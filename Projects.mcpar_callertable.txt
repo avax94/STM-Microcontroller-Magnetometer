@@ -1,8 +1,7 @@
 main
-	__CC2DW
 	__FillZeros
-	init_io
 	init_lcd
+		init_io
 	i2c_init
 		NVIC_IntEnable
 		EnableInterrupts
@@ -50,7 +49,7 @@ event_handler
 			set_position
 			write_string
 				write_lcd
-interrupt2
+error_interrupt
 	DisableInterrupts
 	EnableInterrupts
 	clear_lcd

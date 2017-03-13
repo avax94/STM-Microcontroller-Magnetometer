@@ -64,91 +64,10 @@ extern int reading_xyz;
 extern int called;
 void debug(char* d);
 void read_reg(char reg, char* d, int cnt);
-#line 4 "G:/Projects/MIPS/P1/MyProject.c"
-void init_io() {
-
- RCC_AHB1ENRbits.GPIOCEN = 1;
- RCC_AHB1LPENRbits.GPIOCLPEN = 1;
-
- GPIOC_MODER &= ~((3UL << 2*13));
- GPIOC_MODER &= ~((3UL << 2*4));
- GPIOC_MODER &= ~((3UL << 2*3));
- GPIOC_MODER &= ~((3UL << 2*2));
- GPIOC_MODER &= ~((3UL << 2*1));
- GPIOC_MODER &= ~((3UL << 2*0));
-
-
- GPIOC_MODER |= ((1UL << 2*13));
- GPIOC_MODER |= ((1UL << 2*4));
- GPIOC_MODER |= ((1UL << 2*3));
- GPIOC_MODER |= ((1UL << 2*2));
- GPIOC_MODER |= ((1UL << 2*1));
- GPIOC_MODER |= ((1UL << 2*0));
-#line 34 "G:/Projects/MIPS/P1/MyProject.c"
- GPIOC_OTYPER &= ~((3UL << 13));
- GPIOC_OTYPER &= ~((3UL << 4));
- GPIOC_OTYPER &= ~((3UL << 3));
- GPIOC_OTYPER &= ~((3UL << 2));
- GPIOC_OTYPER &= ~((3UL << 1));
- GPIOC_OTYPER &= ~((3UL << 0));
-
-
- GPIOC_OSPEEDR &= ~((3UL << 2*13));
- GPIOC_OSPEEDR &= ~((3UL << 2*4));
- GPIOC_OSPEEDR &= ~((3UL << 2*3));
- GPIOC_OSPEEDR &= ~((3UL << 2*2));
- GPIOC_OSPEEDR &= ~((3UL << 2*1));
- GPIOC_OSPEEDR &= ~((3UL << 2*0));
-
-
- GPIOC_OSPEEDR |= ((3UL << 2*13));
- GPIOC_OSPEEDR |= ((3UL << 2*4));
- GPIOC_OSPEEDR |= ((3UL << 2*3));
- GPIOC_OSPEEDR |= ((3UL << 2*2));
- GPIOC_OSPEEDR |= ((3UL << 2*1));
- GPIOC_OSPEEDR |= ((3UL << 2*0));
-
-
- GPIOC_PUPDR &= ~((3UL << 2*13));
- GPIOC_PUPDR &= ~((3UL << 2*4));
- GPIOC_PUPDR &= ~((3UL << 2*3));
- GPIOC_PUPDR &= ~((3UL << 2*2));
- GPIOC_PUPDR &= ~((3UL << 2*1));
- GPIOC_PUPDR &= ~((3UL << 2*0));
-}
-
-void read_who_am_i2() {
- char result = 11;
- char send_addr = 0x07;
- char st[32];
- char st2;
- i2c_start_async();
- i2c_send_addr_async(0x0E, 0);
- i2c_send_async(&send_addr, 1);
- Delay_ms(1000);
- i2c_start_async();
- i2c_send_addr_async(0x0E, 1);
- i2c_recv_async(&result, 1);
-
- Delay_ms(1000);
-
-
-
- IntToHex(result, st);
- clear_lcd();
- set_position(0, 0);
- write_string(st);
-}
-
-
+#line 5 "G:/Projects/MIPS/P1/MyProject.c"
 void main() {
- int counter;
- char d[6];
- char output[5];
- init_io();
  init_lcd();
  i2c_init();
-
  init_magnetometer();
 
  while(1) {

@@ -31,8 +31,60 @@ volatile sbit LCD_D6 at GPIOC_ODR.B2;
 volatile sbit LCD_D7 at GPIOC_ODR.B3;
 volatile sbit LCD_RS at GPIOC_ODR.B4;
 volatile sbit LCD_EN at GPIOC_ODR.B13;
- 
+void init_io() {
+    // Enable GPIOC clock
+    RCC_AHB1ENRbits.GPIOCEN = 1; //  |= ((1UL << 2) );
+    RCC_AHB1LPENRbits.GPIOCLPEN = 1;
+    // Clear bits for ports C0 C1 C2 C3 C4 C13
+    GPIOC_MODER &= ~((3UL << 2*13));
+    GPIOC_MODER &= ~((3UL << 2*4));
+    GPIOC_MODER &= ~((3UL << 2*3));
+    GPIOC_MODER &= ~((3UL << 2*2));
+    GPIOC_MODER &= ~((3UL << 2*1));
+    GPIOC_MODER &= ~((3UL << 2*0));
+
+    // Set bits for ports C0 C1 C2 C3 C4 C13 OUTPUT MODE (01b)
+    GPIOC_MODER |= ((1UL << 2*13));
+    GPIOC_MODER |= ((1UL << 2*4));
+    GPIOC_MODER |= ((1UL << 2*3));
+    GPIOC_MODER |= ((1UL << 2*2));
+    GPIOC_MODER |= ((1UL << 2*1));
+    GPIOC_MODER |= ((1UL << 2*0));
+
+    GPIOC_OTYPER &= ~((3UL << 13));
+    GPIOC_OTYPER &= ~((3UL << 4));
+    GPIOC_OTYPER &= ~((3UL << 3));
+    GPIOC_OTYPER &= ~((3UL << 2));
+    GPIOC_OTYPER &= ~((3UL << 1));
+    GPIOC_OTYPER &= ~((3UL << 0));
+
+    // Clear bits OSEED registar for ports  C0 C1 C2 C3 C4 C13
+    GPIOC_OSPEEDR &= ~((3UL << 2*13));
+    GPIOC_OSPEEDR &= ~((3UL << 2*4));
+    GPIOC_OSPEEDR &= ~((3UL << 2*3));
+    GPIOC_OSPEEDR &= ~((3UL << 2*2));
+    GPIOC_OSPEEDR &= ~((3UL << 2*1));
+    GPIOC_OSPEEDR &= ~((3UL << 2*0));
+
+    // Set bits OSEED registar for ports  C0 C1 C2 C3 C4 C13    on high speed (2h = 10b)
+    GPIOC_OSPEEDR |= ((3UL << 2*13));
+    GPIOC_OSPEEDR |= ((3UL << 2*4));
+    GPIOC_OSPEEDR |= ((3UL << 2*3));
+    GPIOC_OSPEEDR |= ((3UL << 2*2));
+    GPIOC_OSPEEDR |= ((3UL << 2*1));
+    GPIOC_OSPEEDR |= ((3UL << 2*0));
+
+    // Clear bits PUPD registar for ports  C0 C1 C2 C3 C4 C13 - NO PULL (00b = 0)
+    GPIOC_PUPDR   &= ~((3UL << 2*13));
+    GPIOC_PUPDR   &= ~((3UL << 2*4));
+    GPIOC_PUPDR   &= ~((3UL << 2*3));
+    GPIOC_PUPDR   &= ~((3UL << 2*2));
+    GPIOC_PUPDR   &= ~((3UL << 2*1));
+    GPIOC_PUPDR   &= ~((3UL << 2*0));
+}
+
  void init_lcd() {
+     init_io();
      START_COMMAND;
      Delay_ms(20);
      send_word(0x33);
@@ -82,5 +134,4 @@ void write_string(char* c) {
 void clear_lcd() {
      START_COMMAND;
      send_word(LCD_CLEAR_DISPLAY);
-     //Delay_ms();
 }

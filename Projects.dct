@@ -10965,7 +10965,6 @@ dds_adc_ccr_bit
 dds_adc2_cr2_bit
 dds_adc3_cr2_bit
 dds_bit
-dealwithit
 debug
 dec2bcd
 dec2bcd16
@@ -13822,6 +13821,7 @@ errie_i2s3ext_cr2_bit
 errie_spi1_cr2_bit
 errie_spi2_cr2_bit
 errie_spi3_cr2_bit
+error_interrupt
 ers
 ers
 ers_bit
@@ -26474,7 +26474,6 @@ inrq
 inrq_bit
 inrq_can1_mcr_bit
 interrupt_handle
-interrupt2
 intid
 intid0
 intid0_bit
@@ -39313,7 +39312,6 @@ re_usart2_cr1_bit
 re_usart3_cr1_bit
 read_reg
 read_who_am_i
-read_who_am_i2
 read_xyz
 reading_xyz
 ready
