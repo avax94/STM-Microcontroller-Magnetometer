@@ -41,15 +41,27 @@ int i2c_get_event() {
 }
 
 void set_ack() {
-     ACKN = 1;
+     I2C2_CR1 |= (1UL << 10);
 }
 
 void clear_ack() {
-     ACKN = 0;
+     I2C2_CR1 &= ~(1UL << 10);
+}
+
+void set_start() {
+     I2C2_CR1 |= (1UL << 8);
 }
 
 void clear_start() {
-     START_TR = 0;
+     I2C2_CR1 |= (1UL << 8);
+}
+
+void set_stop() {
+     I2C2_CR1 |= (1UL << 9);
+}
+
+void clear_stop() {
+     I2C2_CR1 |= (1UL << 9);
 }
 
 void error_interrupt() iv  IVT_INT_I2C2_ER ics ICS_AUTO {
@@ -92,11 +104,11 @@ void error_interrupt() iv  IVT_INT_I2C2_ER ics ICS_AUTO {
 
 void i2c_start_() {
    NVIC_IntEnable(IVT_INT_I2C2_EV);
-   START_TR = 1;
+   set_start();
 }
 
 void i2c_stop_() {
-     I2C2_CR1bits.STOP_ = 1;
+     set_stop();
 }
 
 void i2c_send_addr(char addr, int r_w) {
@@ -105,7 +117,7 @@ void i2c_send_addr(char addr, int r_w) {
 }
 
 void i2c_send(char d) {
-     I2C2_DRbits.DR = d;
+     I2C2_DR = (unsigned long) d;
 }
 
 char i2c_recv() {
@@ -154,54 +166,73 @@ int i2c_recv_async(char* d, int num) {
 
 void i2c_init() {
   const int maxRTime = 1000; //ns
+  const int freq = 40;
   enabl = 1;
   should_start = 0;
   address = 0;
   RCC_APB1ENRbits.I2C2EN = 1; // enable peripherial clock
   i2c_config(); // config pins for i2c
   
+  I2C2_CR1 &= ~(1UL << 0); // PE (PeripherEnable) = 0 disable per to configure it
+  
+  I2C2_CR2 &= ~((1UL << 6) - 1); //clear lowest 6 bits
+  I2C2_CR2 |= freq; //FREQ = 40Mhz
+  //set a freq
+  I2C2_CCR |= (1UL << 15);
+  I2C2_CCR &= ~((1UL << 12) - 1);
+  I2C2_CCR |= 34; //Clock Control - value calculated according to documentation
+  I2C2_TRISE = freq*maxRTime / maxRTime + 1;
+  
+  I2C2_CR1 |= (1UL << 0); // PE (PeripherEnable) = 1 enable per to configure it
+  
+  I2C2_CR1 &= ~(1UL << 7); //NOSTRETCH = 0
+  I2C2_CR2 |= (0x7UL << 8); //ITBUFEN, ITEVTEN, ITERREN - Enable interrupts for error and event
+  I2C2_OAR1 |= (1UL << 14); //must be kept at 1 value (documenatation)
+  I2C2_OAR1 &= ~(1UL << 15); //ADDMODE = 0 (7bits slave address)
+  
   NVIC_IntEnable(IVT_INT_I2C2_EV); // set interrupts
   NVIC_IntEnable(IVT_INT_I2C2_ER); // set interrupts
   EnableInterrupts(); // enable interrupts
-  I2C2_CR1bits.PE = 0; // disable per to configure it
-  I2C2_CR2bits.FREQ = 40;
-
-  //set a freq
-  I2C2_CCRbits.F_S = 1;
-  //set Thigh = 0.9 us = 900 ns and TLow = 1.8
-  I2C2_CCRbits.CCR = 34;
-  I2C2_TRISEbits.TRISE = I2C2_CR2bits.FREQ*1000 / maxRTime + 1;
-  I2C2_CR1bits.PE = 1;
-  NOSTRETCH_I2C = 0;
-  I2C2_CR2bits.ITERREN = 1;
-  ITBUFEN_I2C = 1;
-  ITEVTEN_I2C = 1;
-  I2C2_OAR1.B14 = 1;
-  I2C2_OAR1bits.ADDMODE = 0;
 }
 
  void i2c_config() {
-   /* RCC Configuration */
-   /*I2C Peripheral clock enable */
-   /*SDA and SCL GPIO clock enable */
-   RCC_AHB1ENRbits.GPIOBEN = 1;
+    /* RCC Configuration */
+    /*I2C Peripheral clock enable */
+    /*SDA and SCL GPIO clock enable */
+    RCC_AHB1ENR |= (1UL << 1); //GPIOBEN = 1
 
-   /* Reset I2Cx IP */
-   RCC_APB1RSTRbits.I2C2RST = 1;
-   /* Release reset signal of I2Cx IP */
-   RCC_APB1RSTRbits.I2C2RST = 0;
+    /* Reset I2Cx IP */
+    RCC_APB1RSTR |= (1UL << 22); //I2C2RST = 1;
+    /* Release reset signal of I2Cx IP */
+    RCC_APB1RSTR &= ~(1UL << 22); //I2C2RST = 0;
 
-   /* GPIO Configuration */
-   /*Configure I2C SCL pin */
-   GPIOB_OTYPERbits.OT10 = 1;
-   GPIOB_MODERbits.MODER10 = 2; //alternate function
-   GPIOB_PUPDRbits.PUPDR10 = 1;
-   GPIOB_OSPEEDRbits.OSPEEDR10 = 1;
-   GPIOB_AFRHbits.AFRH10 = 4; //i2c af
- 
-   GPIOB_OTYPERbits.OT11 = 1;
-   GPIOB_MODERbits.MODER11 = 2; //alternate function
-   GPIOB_PUPDRbits.PUPDR11 = 1;
-   GPIOB_OSPEEDRbits.OSPEEDR11 = 1;
-   GPIOB_AFRHbits.AFRH11 = 4; //i2c af
+    /* GPIO Configuration */
+    /*Configure I2C SCL and SDA pins (B10, B11) pin */
+    // clear then set to ALTERNATE FUNCTION MODE (10b)
+    GPIOB_MODER &= ~(3UL << 2*10);
+    GPIOB_MODER &= ~(3UL << 2*11);
+    GPIOB_MODER |= (2UL << 2*10);
+    GPIOB_MODER |= (2UL << 2*11);
+
+    //Set otyper bits (Open drain)
+    GPIOB_OTYPER |= (1UL << 10);
+    GPIOB_OTYPER |= (1UL << 11);
+
+    // Clear bits OSEED register than set to medium speed
+    GPIOB_OSPEEDR &= ~((3UL << 2*10));
+    GPIOB_OSPEEDR &= ~((3UL << 2*11));
+    GPIOB_OSPEEDR |= (1UL << 2*10);
+    GPIOB_OSPEEDR |= (1UL << 2*11);
+
+    // Clear bits PUPD registar than set to PullUp
+    GPIOB_PUPDR &= ~((3UL << 2*10));
+    GPIOB_PUPDR &= ~((3UL << 2*11));
+    GPIOB_PUPDR |= ((1UL << 2*11));
+    GPIOB_PUPDR |= ((1UL << 2*10));
+
+    //Clear AFRH bits and set AF to i2c
+    GPIOB_AFRH &= ~((0xFUL << 4*2)); // 10 - 8 = 2
+    GPIOB_AFRH &= ~((0xFUL << 4*3)); // 11 - 8 = 3
+    GPIOB_AFRH |= (4UL << 4*2);
+    GPIOB_AFRH |= (4UL << 4*3);
  }

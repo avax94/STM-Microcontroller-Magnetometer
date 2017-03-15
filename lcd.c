@@ -51,12 +51,12 @@ void init_io() {
     GPIOC_MODER |= ((1UL << 2*1));
     GPIOC_MODER |= ((1UL << 2*0));
 
-    GPIOC_OTYPER &= ~((3UL << 13));
-    GPIOC_OTYPER &= ~((3UL << 4));
-    GPIOC_OTYPER &= ~((3UL << 3));
-    GPIOC_OTYPER &= ~((3UL << 2));
-    GPIOC_OTYPER &= ~((3UL << 1));
-    GPIOC_OTYPER &= ~((3UL << 0));
+    GPIOC_OTYPER &= ~((3UL << 2*13));
+    GPIOC_OTYPER &= ~((3UL << 2*4));
+    GPIOC_OTYPER &= ~((3UL << 2*3));
+    GPIOC_OTYPER &= ~((3UL << 2*2));
+    GPIOC_OTYPER &= ~((3UL << 2*1));
+    GPIOC_OTYPER &= ~((3UL << 2*0));
 
     // Clear bits OSEED registar for ports  C0 C1 C2 C3 C4 C13
     GPIOC_OSPEEDR &= ~((3UL << 2*13));
