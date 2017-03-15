@@ -3,10 +3,6 @@
 #include "magnetometer.h"
 #include "interrupts.h"
 
-volatile sbit ADDMODE_I2C at I2C2_OAR1.B15;
-volatile sbit RxNE_I2C at I2C2_SR1.B6;
-volatile sbit TxE_I2C at I2C2_SR1.B7;
-volatile sbit ADDR_I2C at I2C2_SR1.B1;
 int state_ = 0;
 int cnt = 0;
 char stt[5];
@@ -72,35 +68,37 @@ void error_interrupt() iv  IVT_INT_I2C2_ER ics ICS_AUTO {
    clear_lcd();
    set_position(0, 0);
    write_string("ERROR: ");
-  if(I2C2_SR1bits.BERR == 1){
-   write_string("BERR");
-  }
+   
+   if(((I2C2_SR1 >> 10) & 1) == 1) {
+     write_string("AF");
+   }
   
-   if(I2C2_SR1bits.AF == 1){
-    write_string("AF");
-  }
+   if(((I2C2_SR1 >> 9) & 1) == 1) {
+     write_string("ARLO");
+   }
+   
+   if(((I2C2_SR1 >> 8) & 1) == 1) {
+     write_string("BERR");
+   }
+
+   if(((I2C2_SR1 >> 11) & 1) == 1) {
+     write_string("OVR");
+   }
   
-   if(I2C2_SR1bits.ARLO == 1){
-    write_string("ARLO");
-  }
+   if(((I2C2_SR1 >> 12) & 1) == 1){
+     write_string("PECERR");
+   }
   
-   if(I2C2_SR1bits.OVR == 1){
-    write_string("OVR");
-  }
+   if(((I2C2_SR1 >> 14) & 1) == 1){
+     write_string("TIMEOUT");
+   }
   
-   if(I2C2_SR1bits.PECERR == 1){
-    write_string("PECERR");
-  }
-  
-   if(I2C2_SR1bits.TIMEOUT == 1){
-    write_string("TIMEOUT");
-  }
-  
-   if(I2C2_SR1bits.SMBALERT == 1){
-    write_string("SMBALERT");
-  }
-  Delay_ms(1000);
-  enInterrupts();
+   if(((I2C2_SR1 >> 15) & 1) == 1){
+     write_string("SMBALERT");
+   }
+   
+   Delay_ms(1000);
+   enInterrupts();
 }
 
 void i2c_start_() {

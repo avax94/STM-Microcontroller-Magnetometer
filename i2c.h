@@ -29,13 +29,6 @@ int i2c_get_event();
 
 enum states {STARTING, ADDRESS_SENT, RECEIVED, TRANSMITTED, STOPING, DEFAULT} ;
 
-extern volatile sbit ADDMODE_I2C;
-extern volatile sbit RxNE_I2C;
-extern volatile sbit TxE_I2C;
-extern volatile sbit ADDR_I2C;
-
-extern volatile sbit TRA_I2C;
-
 extern int state_;
 extern int cnt;
 extern char stt[];
