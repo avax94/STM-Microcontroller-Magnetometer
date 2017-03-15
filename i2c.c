@@ -1,6 +1,7 @@
 #include "lcd.h"
 #include "i2c.h"
 #include "magnetometer.h"
+#include "interrupts.h"
 
 volatile sbit ADDMODE_I2C at I2C2_OAR1.B15;
 volatile sbit RxNE_I2C at I2C2_SR1.B6;
@@ -65,13 +66,12 @@ void clear_stop() {
 }
 
 void error_interrupt() iv  IVT_INT_I2C2_ER ics ICS_AUTO {
-   DisableInterrupts();
+   disInterrupts();
    clear_lcd();
    set_position(0, 0);
    write_string("ERROR: ");
   if(I2C2_SR1bits.BERR == 1){
    write_string("BERR");
-   EnableInterrupts();
   }
   
    if(I2C2_SR1bits.AF == 1){
@@ -97,13 +97,12 @@ void error_interrupt() iv  IVT_INT_I2C2_ER ics ICS_AUTO {
    if(I2C2_SR1bits.SMBALERT == 1){
     write_string("SMBALERT");
   }
-  
   Delay_ms(1000);
-  EnableInterrupts();
+  enInterrupts();
 }
 
 void i2c_start_() {
-   NVIC_IntEnable(IVT_INT_I2C2_EV);
+   nvicEnable(IVT_INT_I2C2_EV);
    set_start();
 }
 
@@ -190,9 +189,9 @@ void i2c_init() {
   I2C2_OAR1 |= (1UL << 14); //must be kept at 1 value (documenatation)
   I2C2_OAR1 &= ~(1UL << 15); //ADDMODE = 0 (7bits slave address)
   
-  NVIC_IntEnable(IVT_INT_I2C2_EV); // set interrupts
-  NVIC_IntEnable(IVT_INT_I2C2_ER); // set interrupts
-  EnableInterrupts(); // enable interrupts
+  nvicEnable(IVT_INT_I2C2_EV); // set interrupts
+  nvicEnable(IVT_INT_I2C2_ER); // set interrupts
+  enInterrupts(); // enable interrupts
 }
 
  void i2c_config() {

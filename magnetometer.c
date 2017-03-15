@@ -19,6 +19,7 @@
 #define SENSOR_ADDR    0xC4
 #include "lcd.h"
 #include "i2c.h"
+#include "interrupts.h"
 
 int reg_send = 0;
 int is_configured = 0;
@@ -71,7 +72,7 @@ void calcAngle(char *xyz) {
 }
 
 void event_handler() iv  IVT_INT_I2C2_EV ics ICS_AUTO {
-    DisableInterrupts();
+    disInterrupts();
     switch(i2c_get_event()) {
     case STARTING:
          ACKN = 1;
@@ -140,8 +141,7 @@ void event_handler() iv  IVT_INT_I2C2_EV ics ICS_AUTO {
     case DEFAULT:
         break;
     }
-    
-    EnableInterrupts();
+    enInterrupts();
 }
 
 //send MAG3110 reg addr
@@ -155,7 +155,7 @@ void read_who_am_i() {
     char result = 0;
     char st[5];
     cnt = 0;
-    EnableInterrupts();
+    enInterrupts();
     debug("Entered...");
     Delay_ms(1000);
     i2c_start_async();
@@ -211,8 +211,8 @@ void configure_exti() {
      EXTI_FTSR = 0x00000000;
      EXTI_RTSR = 0x00000400; //detect rising edge
      EXTI_IMR |= 0x00000400; //unmask bit
-     NVIC_IntEnable(IVT_INT_EXTI15_10);
-     EnableInterrupts();
+     nvicEnable(IVT_INT_EXTI15_10);
+     enInterrupts();
 
      read_xyz(xyz); //we need to read xyz to clear INT1 bit because if its set we won't be able to detect rising edge
 }
@@ -233,7 +233,7 @@ void init_magnetometer() {
 }
 
 void interrupt_handle() iv IVT_INT_EXTI15_10 ics ICS_AUTO {
-   if(is_configured == 0) {
+  if(is_configured == 0) {
      return;
    }
    
