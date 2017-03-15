@@ -6,7 +6,7 @@ Value=0
 [BUILD_TYPE]
 Value=0
 [ACTIVE_TAB]
-Value=MyProject.c
+Value=i2c.c
 [USE_EEPROM]
 Value=0
 [USE_HEAP]
@@ -16,18 +16,19 @@ Value=0
 [EEPROM_DEFINITION]
 Value=
 [FILES]
-Count=4
+Count=5
 File0=i2c.c
 File1=magnetometer.c
 File2=lcd.c
 File3=MyProject.c
+File4=interrupts.c
 [BINARIES]
 Count=0
 [IMAGES]
 Count=0
 ActiveImageIndex=-1
 [OPENED_FILES]
-Count=9
+Count=11
 File0=magnetometer.c
 File1=lcd.c
 File2=lcd.h
@@ -37,6 +38,8 @@ File5=C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for ARM\Defs\STM32F4
 File6=magnetometer.h
 File7=i2c.c
 File8=i2c.h
+File9=interrupts.h
+File10=interrupts.c
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]
@@ -44,20 +47,22 @@ Count=0
 [OTHER_FILES]
 Count=0
 [SEARCH_PATH]
-Count=5
+Count=6
 Path0=C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for ARM\Defs\
 Path1=C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for ARM\Uses\
 Path2=G:\Projects\MIPS\P1\
 Path3=C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for ARM\Uses\ST M4\
 Path4=G:\Projects\MIPS\
+Path5=G:\Projects\MIPS\P1\
 [HEADER_PATH]
 Count=1
 Path0=G:\Projects\MIPS\P1\
 [HEADERS]
-Count=3
+Count=4
 File0=i2c.h
 File1=lcd.h
 File2=magnetometer.h
+File3=interrupts.h
 [PLDS]
 Count=0
 [Useses]
