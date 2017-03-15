@@ -1,19 +1,6 @@
 #ifndef I2C_H_
 #define I2C_H_
 
-#define ACKN I2C2_CR1bits.ACK
-#define START_TR I2C2_CR1bits.START
-#define STOP I2C2_CR1bits.STOP_
-#define NOSTRETCH_I2C I2C2_CR1bits.NOSTRETCH
-#define ITBUFEN_I2C I2C2_CR2bits.ITBUFEN
-#define ITEVTEN_I2C I2C2_CR2bits.ITEVTEN
-
-#define BUSY I2C2_SR2bits.BUSY
-#define MSL I2C2_SR2bits.MSL
-#define TRA I2C2_SR2bits.TRA
-#define SB I2C2_SR1bits.SB
-#define BTF_I2C I2C2_SR1bits.BTF
-
 /* events */
 #define STARTING_EV5 0x00000001
 #define ADDR_SENT_EV6 0x00000002
@@ -34,7 +21,10 @@ void i2c_config();
 void i2c_stop();
 void set_ack();
 void clear_start();
+void set_start();
 void clear_ack();
+int get_btf();
+
 int i2c_get_event();
 
 enum states {STARTING, ADDRESS_SENT, RECEIVED, TRANSMITTED, STOPING, DEFAULT} ;
