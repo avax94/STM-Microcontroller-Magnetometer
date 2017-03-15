@@ -75,8 +75,8 @@ void event_handler() iv  IVT_INT_I2C2_EV ics ICS_AUTO {
     disInterrupts();
     switch(i2c_get_event()) {
     case STARTING:
-         ACKN = 1;
-
+         set_ack();
+         
          if(reg_send == 0) { //if we are in register address sending state
              I2C2_DR = address << 1 | 0;
          }
@@ -84,7 +84,7 @@ void event_handler() iv  IVT_INT_I2C2_EV ics ICS_AUTO {
              i2c_send_addr(address, r_notw); //if we already sent register address we now do read or write
          }
 
-         START_TR = 0; //clear start flag
+         clear_start();
          break;
     case ADDRESS_SENT:
          dummy1 = I2C2_SR1; //need to read sr1 followed by read sr2 so we clean flags
@@ -97,14 +97,14 @@ void event_handler() iv  IVT_INT_I2C2_EV ics ICS_AUTO {
              if(curr_transfer != transfer_count) { //transmiter
                  i2c_send(transfer[curr_transfer]);
                  curr_transfer = curr_transfer +  1;
-              } else if(BTF_I2C == 1) { //STOP when BTF is set
+              } else if(get_btf() == 1) { //STOP when BTF is set
                     i2c_stop_();
               }
          } else {
             if(curr_transfer == 0) {
                i2c_send(reg_addr);
                curr_transfer = curr_transfer + 1;
-            } else if(BTF_I2C == 1) { //take action when BTF
+            } else if(get_btf() == 1) { //take action when BTF
                reg_send = 1;
                curr_transfer = 0;
                
@@ -119,7 +119,7 @@ void event_handler() iv  IVT_INT_I2C2_EV ics ICS_AUTO {
              curr_transfer = curr_transfer + 1;
 
              if(curr_transfer == transfer_count) {
-                 ACKN = 0; //send NACK
+                 clear_ack(); //send NACK
                  i2c_stop_(); //stop communication
                  state_ = 5;
              }
@@ -133,10 +133,6 @@ void event_handler() iv  IVT_INT_I2C2_EV ics ICS_AUTO {
          }  else  {
             i2c_recv();
          }
-         break;
-    case STOPING:
-         if(I2C2_SR1bits.STOPF == 1)
-             I2C2_CR1bits.STOP_ = 0;
          break;
     case DEFAULT:
         break;

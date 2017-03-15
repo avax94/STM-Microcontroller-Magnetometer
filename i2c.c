@@ -54,7 +54,7 @@ void set_start() {
 }
 
 void clear_start() {
-     I2C2_CR1 |= (1UL << 8);
+     I2C2_CR1 &= ~(1UL << 8);
 }
 
 void set_stop() {
@@ -62,7 +62,11 @@ void set_stop() {
 }
 
 void clear_stop() {
-     I2C2_CR1 |= (1UL << 9);
+     I2C2_CR1 &= ~(1UL << 9);
+}
+
+int get_btf() {
+    return (I2C2_SR1 >> 2) & 1;
 }
 
 void error_interrupt() iv  IVT_INT_I2C2_ER ics ICS_AUTO {
