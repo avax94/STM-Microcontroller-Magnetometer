@@ -151,7 +151,6 @@ void read_who_am_i() {
     char result = 0;
     char st[5];
     cnt = 0;
-    enInterrupts();
     debug("Entered...");
     Delay_ms(1000);
     i2c_start_async();
@@ -196,19 +195,30 @@ int read_xyz(char *d) {
 
 void configure_exti() {
      char xyz[6];
-     RCC_APB2ENRbits.SYSCFGEN = 1; //enable syscfg periph
-     RCC_AHB1ENRbits.GPIOEEN = 1; //enable PE clock
-     GPIOE_MODERbits.MODER10 = 0; //set PE10 as input
+     RCC_APB2ENR |= 1UL << 14; // SYSCFGEN = 1; enable syscfg periph
+     RCC_AHB1ENR |= 1UL << 4; // GPIOEEN = 1; enable PE clock
+
+     /* configure GPIO pin */
+     //set PE10 as input
+     GPIOE_MODER &= ~(3UL << 2*10);
+     //Set otyper bits (Open drain)
+     GPIOE_OTYPER &= ~(1UL << 10);
+     // Clear bits OSEED register than set speed
+     GPIOE_OSPEEDR &= ~((3UL << 2*10));
+     GPIOE_OSPEEDR |= (2UL << 2*10);
+     // Clear bits PUPD registar than set to PullUp
+     GPIOE_PUPDR &= ~((3UL << 2*10));
+     GPIOE_PUPDR |= ((1UL << 2*10));
+     /*GPIOE_MODERbits.MODER10 = 0; //set PE10 as input
      GPIOE_PUPDRbits.PUPDR10 = 0x1; //pullup
      GPIOE_OTYPERbits.OT10 = 0x0;
-     GPIOE_OSPEEDRbits.OSPEEDR10 = 0x2;
-
-     SYSCFG_EXTICR3bits.EXTI10 = 0x4; //set PE10 to be EXTI pin
+     GPIOE_OSPEEDRbits.OSPEEDR10 = 0x2;*/
+     SYSCFG_EXTICR3 &= ~(0xF << 2*4);
+     SYSCFG_EXTICR3 |= 0x4 << 2*4; //set PE10 to be EXTI pin
      EXTI_FTSR = 0x00000000;
      EXTI_RTSR = 0x00000400; //detect rising edge
      EXTI_IMR |= 0x00000400; //unmask bit
      nvicEnable(IVT_INT_EXTI15_10);
-     enInterrupts();
 
      read_xyz(xyz); //we need to read xyz to clear INT1 bit because if its set we won't be able to detect rising edge
 }
@@ -233,7 +243,7 @@ void interrupt_handle() iv IVT_INT_EXTI15_10 ics ICS_AUTO {
      return;
    }
    
-   EXTI_PR.B10 = 1; // clear interrupt flag
+   EXTI_PR = 1 << 10; // clear interrupt flag
    reading_xyz = 1; // enter STATE: reading magnetometer data
    read_reg(OUT_X_MSB_ADDR, xyz, 6); //read data
 }
