@@ -50,8 +50,8 @@ void calcAngle(char *xyz) {
      y = (((int)xyz[2]) << 8) | xyz[3];
      
      //substract offset
-     y -= (int)((0x0000029A + 0x00000438) >> 1);
-     x -= (int)((0x0000FD00 + 0x0000FB4F) >> 1);
+     y -= (int)((0x00000264 + 0x000003FE) >> 1);
+     x -= (int)((0x0000FD05 + 0x0000FB89) >> 1);
      heading = atan2(y, x);
      heading = heading - declAngle;
      
