@@ -277,7 +277,6 @@ abrq2
 abrq2
 abrq2_bit
 abrq2_can1_tsr_bit
-abs
 accmod
 accmod
 accmod
@@ -879,7 +878,6 @@ addmode
 addmode
 addmode
 addmode_bit
-addmode_i2c
 addmode_i2c1_oar1_bit
 addmode_i2c2_oar1_bit
 addr
@@ -887,10 +885,8 @@ addr
 addr
 addr
 addr_bit
-addr_i2c
 addr_i2c1_sr1_bit
 addr_i2c2_sr1_bit
-address
 addset
 addset
 addset
@@ -2281,9 +2277,6 @@ asyncwait_fsmc_bcr3_bit
 asyncwait_fsmc_bcr4_bit
 atan
 atan2
-atof
-atoi
-atol
 atthizx
 atthizx
 atthizx
@@ -4370,8 +4363,6 @@ byte37_bit
 bytetohex
 bytetostr
 bytetostrwithzeros
-calcangle
-called
 calm
 calm0
 calm0_bit
@@ -7471,9 +7462,6 @@ ckpol_i2s2ext_i2scfgr_bit
 ckpol_i2s3ext_i2scfgr_bit
 ckpol_spi2_i2scfgr_bit
 ckpol_spi3_i2scfgr_bit
-clear_ack
-clear_lcd
-clear_start
 clkdiv
 clkdiv
 clkdiv
@@ -7991,7 +7979,6 @@ cnt
 cnt
 cnt
 cnt
-cnt
 cnt_h
 cnt_h
 cnt_h
@@ -8498,7 +8485,6 @@ configs
 configs
 configs
 configs
-configure_exti
 constant
 constant0
 constant0_bit
@@ -8518,7 +8504,6 @@ cont_bit
 cos
 cose3
 cosh
-counter
 countflag
 countflag
 countflag_bit
@@ -8924,7 +8909,6 @@ ctxpkt
 ctxpkt
 ctxpkt_bit
 ctxpkt_otg_hs_gusbcfg_bit
-curr_transfer
 current
 current0
 current0_bit
@@ -10965,7 +10949,6 @@ dds_adc_ccr_bit
 dds_adc2_cr2_bit
 dds_adc3_cr2_bit
 dds_bit
-debug
 dec2bcd
 dec2bcd16
 delay
@@ -11130,7 +11113,6 @@ discnum2
 discnum2_adc2_cr1_bit
 discnum2_adc3_cr1_bit
 discnum2_bit
-div
 div_0_trp
 div_0_trp
 div_0_trp_bit
@@ -12941,8 +12923,6 @@ dualf
 dualf_bit
 dualf_i2c1_sr2_bit
 dualf_i2c2_sr2_bit
-dummy1
-dummy2
 duty
 duty
 duty
@@ -13193,7 +13173,6 @@ en1_bit
 en2
 en2
 en2_bit
-enabl
 enable_
 enable_
 enable_
@@ -13821,7 +13800,6 @@ errie_i2s3ext_cr2_bit
 errie_spi1_cr2_bit
 errie_spi2_cr2_bit
 errie_spi3_cr2_bit
-error_interrupt
 ers
 ers
 ers_bit
@@ -14050,7 +14028,6 @@ etps1_tim8_smcr_bit
 ets
 ets
 ets_bit
-event_handler
 ewgf
 ewgf
 ewgf
@@ -24667,23 +24644,11 @@ hubaddr6_otg_hs_hcsplt9_bit
 hwfc_en
 hwfc_en
 hwfc_en_bit
-i2c_config
-i2c_get_event
-i2c_init
 i2c_read
 i2c_read_ptr
-i2c_recv
-i2c_recv_async
-i2c_send
-i2c_send_addr
-i2c_send_addr_async
-i2c_send_async
 i2c_set_active
 i2c_start
-i2c_start_
-i2c_start_async
 i2c_start_ptr
-i2c_stop_
 i2c_write
 i2c_write_ptr
 i2c1_ccr
@@ -26459,9 +26424,6 @@ ineptxsa9_otg_hs_dieptxf7_bit
 init
 init
 init_bit
-init_io
-init_lcd
-init_magnetometer
 initf
 initf
 initf_bit
@@ -26473,7 +26435,6 @@ inrq
 inrq
 inrq_bit
 inrq_can1_mcr_bit
-interrupt_handle
 intid
 intid0
 intid0_bit
@@ -27409,7 +27370,6 @@ irs
 irs_bit
 irs_fsmc_sr3_bit
 irs_fsmc_sr4_bit
-is_configured
 isalnum
 isalpha
 iscntrl
@@ -28345,7 +28305,6 @@ l3
 l3_adc2_sqr1_bit
 l3_adc3_sqr1_bit
 l3_bit
-labs
 last
 last
 last
@@ -28413,12 +28372,6 @@ lbkm
 lbkm
 lbkm_bit
 lbkm_can1_btr_bit
-lcd_d4
-lcd_d5
-lcd_d6
-lcd_d7
-lcd_en
-lcd_rs
 lck0
 lck0
 lck0
@@ -28743,7 +28696,6 @@ lckk_gpiof_lckr_bit
 lckk_gpiog_lckr_bit
 lckk_gpioh_lckr_bit
 ldexp
-ldiv
 lec
 lec
 lec
@@ -28845,7 +28797,6 @@ longtostr
 longwordtohex
 longwordtostr
 longwordtostrwithzeros
-lout
 low0
 low0
 low0
@@ -30497,7 +30448,6 @@ maca3h8
 maca3h8_bit
 maca3h9
 maca3h9_bit
-main
 mamp1
 mamp10
 mamp10_bit
@@ -30530,17 +30480,6 @@ maskss2_rtc_alrmbssr_bit
 maskss3
 maskss3_bit
 maskss3_rtc_alrmbssr_bit
-matrix_add16
-matrix_add32
-matrix_multiply16
-matrix_multiply32
-matrix_scale16
-matrix_scale32
-matrix_subtract16
-matrix_subtract32
-matrix_transpose16
-matrix_transpose32
-max
 mb
 mb
 mb
@@ -30840,9 +30779,6 @@ mem_mode0
 mem_mode0_bit
 mem_mode1
 mem_mode1_bit
-memchr
-memcmp
-memcpy
 memfaultact
 memfaultact
 memfaultact_bit
@@ -30922,8 +30858,6 @@ memholdx7
 memholdx7_bit
 memholdx7_fsmc_pmem3_bit
 memholdx7_fsmc_pmem4_bit
-memmove
-memset
 memsetx
 memsetx
 memsetx
@@ -31056,7 +30990,6 @@ mfc9_bit
 mii_rmii_sel
 mii_rmii_sel
 mii_rmii_sel_bit
-min
 minc
 minc
 minc
@@ -35715,7 +35648,6 @@ otgint_bit
 otgint_otg_fs_gintmsk_bit
 otgint_otg_hs_gintmsk_bit
 otgint_otg_hs_gintsts_bit
-output
 over8
 over8
 over8
@@ -37522,7 +37454,6 @@ pocchng_otg_hs_hprt_bit
 pol
 pol
 pol_bit
-poll_value
 poprgdne
 poprgdne
 poprgdne
@@ -37794,7 +37725,6 @@ prigroup1
 prigroup1_bit
 prigroup2
 prigroup2_bit
-printtolcd
 product_id
 product_id
 product_id0
@@ -39191,7 +39121,6 @@ pxfr_incompisoout_bit
 pxfrm_iisooxfrm
 pxfrm_iisooxfrm
 pxfrm_iisooxfrm_bit
-r_notw
 r0
 r1
 r10
@@ -39214,7 +39143,6 @@ ra_bit
 ram
 ram
 ram_bit
-rand
 rbuie
 rbuie
 rbuie_bit
@@ -39310,10 +39238,6 @@ re_uart5_cr1_bit
 re_usart1_cr1_bit
 re_usart2_cr1_bit
 re_usart3_cr1_bit
-read_reg
-read_who_am_i
-read_xyz
-reading_xyz
 ready
 ready
 ready_bit
@@ -39349,8 +39273,6 @@ recalpf_bit
 refckon
 refckon
 refckon_bit
-reg_addr
-reg_send
 reload
 reload0
 reload0_bit
@@ -40410,7 +40332,6 @@ rxne
 rxne
 rxne
 rxne_bit
-rxne_i2c
 rxne_i2c1_sr1_bit
 rxne_i2c2_sr1_bit
 rxne_i2c3_sr1_bit
@@ -40708,13 +40629,10 @@ sedet_otg_hs_gotgint_bit
 seis
 seis
 seis_bit
-send_reg_addr_async
 ser
 ser
 ser_bit
-set_ack
 set_fosc_khz
-set_position
 setena
 setena
 setena
@@ -40996,7 +40914,6 @@ sgonak_otg_hs_dctl_bit
 shorttohex
 shorttostr
 shorttostrwithzeros
-should_start
 shpf
 shpf
 shpf_bit
@@ -41970,8 +41887,6 @@ sram1lpen_bit
 sram2lpen
 sram2lpen
 sram2lpen_bit
-srand
-sreg
 srl
 srl0
 srl0_bit
@@ -42332,7 +42247,6 @@ start
 start_bit
 start_i2c1_cr1_bit
 start_i2c2_cr1_bit
-state_
 stbiterr
 stbiterr
 stbiterr_bit
@@ -42560,7 +42474,6 @@ stop_
 stop_
 stop_
 stop_bit
-stop_generated
 stop_i2c1_cr1_bit
 stop_i2c2_cr1_bit
 stop0
@@ -42592,19 +42505,6 @@ stppclk
 stppclk
 stppclk_bit
 stppclk_otg_hs_pcgcr_bit
-strcat
-strchr
-strcmp
-strcpy
-strcspn
-strlen
-strncat
-strncmp
-strncpy
-strpbrk
-strrchr
-strspn
-strstr
 strt
 strt
 strt
@@ -42623,7 +42523,6 @@ strt2_bit
 strt3
 strt3
 strt3_bit
-strtok
 sts
 sts0
 sts0_bit
@@ -42769,7 +42668,6 @@ stssi6
 stssi6_bit
 stssi7
 stssi7_bit
-stt
 stup
 stup
 stup
@@ -43509,7 +43407,6 @@ terr2
 terr2
 terr2_bit
 terr2_can1_tsr_bit
-test_rd_write
 tfce
 tfce
 tfce_bit
@@ -44849,8 +44746,6 @@ trace_mode0
 trace_mode0_bit
 trace_mode1
 trace_mode1_bit
-transfer
-transfer_count
 trdt
 trdt
 trdt0
@@ -45648,7 +45543,6 @@ txe
 txe
 txe
 txe_bit
-txe_i2c
 txe_i2c1_sr1_bit
 txe_i2c2_sr1_bit
 txe_i2c3_sr1_bit
@@ -46192,7 +46086,6 @@ uif_tim6_sr_bit
 uif_tim7_sr_bit
 uif_tim8_sr_bit
 uif_tim9_sr_bit
-uldiv
 ulpiar
 ulpiar
 ulpiar_bit
@@ -46828,9 +46721,6 @@ wren_bit
 wren_fsmc_bcr2_bit
 wren_fsmc_bcr3_bit
 wren_fsmc_bcr4_bit
-write_lcd
-write_reg
-write_string
 wrperr
 wrperr
 wrperr_bit
@@ -47836,8 +47726,6 @@ xfrsiz9_otg_hs_hctsiz6_bit
 xfrsiz9_otg_hs_hctsiz7_bit
 xfrsiz9_otg_hs_hctsiz8_bit
 xfrsiz9_otg_hs_hctsiz9_bit
-xtoi
-xyz
 yt
 yt0
 yt0_bit
