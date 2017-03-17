@@ -1,17 +1,21 @@
 #define S_DDRAM 0b001
-#define W_RAM 0x10
-#define EN_SET GPIOC_ODR |= (1UL << 13)
-#define EN_R GPIOC_ODR &= ~(1UL << 13)
-#define START_COMMAND GPIOC_ODR = 0x0
-#define setLow(x) GPIOC_ODR = (GPIOC_ODR & ~0xF) | x
+#define W_RAM 1UL << RS_PIN
+#define EN_SET GPIOx_ODR |= (1UL << E_PIN)
+#define EN_R GPIOx_ODR &= ~(1UL << E_PIN)
+#define START_COMMAND GPIOx_ODR = 0x0
+#define setLow(x) GPIOx_ODR = (GPIOx_ODR & ~0xF) | x
+#define sendBit(x, pos) GPIOx_ODR &= ~(1 << pos); \
+                        GPIOx_ODR |= x << pos;
 #define send_data(x)  EN_SET; \
-                      setLow(x); \
+                      sendBit((x & 1) >> 0, DATA4_PIN); \
+                      sendBit((x & 2) >> 1, DATA5_PIN); \
+                      sendBit((x & 4) >> 2, DATA6_PIN); \
+                      sendBit((x & 8) >> 3, DATA7_PIN); \
                       EN_R;
 #define send_word(x)  send_data(x >> 4); \
                       Delay_us (1); \
                       send_data(x & 0xF); \
                       Delay_us(1);
-               // 0100 0001
 
 #define LCD_CLEAR_DISPLAY           0x01
 #define LCD_RETRN_HOME              0x02
@@ -25,56 +29,72 @@
 #define LCD_CUR_MOV_RIGHT           0x14
 #define LCD_BUSY                    0x80
 
+#define E_PIN     13
+#define RS_PIN     4
+#define DATA7_PIN  3
+#define DATA6_PIN  2
+#define DATA5_PIN  1
+#define DATA4_PIN  0
+
+#define GPIO(xx, yy) GPIOC_##yy
+
+#define GPIOx_MODER GPIO(GPIOx, MODER)
+#define GPIOx_OTYPER GPIO(GPIOx, OTYPER)
+#define GPIOx_OSPEEDR GPIO(GPIOx, OSPEEDR)
+#define GPIOx_PUPDR GPIO(GPIOx, PUPDR)
+#define GPIOx_ODR GPIO(GPIOx, ODR)
+
 void init_io() {
     // Enable GPIOC clock
     RCC_AHB1ENRbits.GPIOCEN = 1; //  |= ((1UL << 2) );
     RCC_AHB1LPENRbits.GPIOCLPEN = 1;
-    // Clear bits
-    GPIOC_MODER &= ~(3UL << 2*13);
-    GPIOC_MODER &= ~(3UL << 2*4);
-    GPIOC_MODER &= ~(3UL << 2*3);
-    GPIOC_MODER &= ~(3UL << 2*2);
-    GPIOC_MODER &= ~(3UL << 2*1);
-    GPIOC_MODER &= ~(3UL << 2*0);
+    //Configure E_PIN
+    GPIOx_MODER &= ~(3UL << 2*E_PIN); //clear
+    GPIOx_MODER |= 1UL << 2*E_PIN; //output mode
+    GPIOx_OTYPER &= ~(3UL << E_PIN);
+    GPIOx_OSPEEDR &= ~(3UL << 2*E_PIN); //clear
+    GPIOx_OSPEEDR |= 3UL << 2*E_PIN;  //high speed
+    GPIOx_PUPDR   &= ~(3UL << 2*E_PIN); //no pull
 
-    // Set bits output mode (01b)
-    GPIOC_MODER |= 1UL << 2*13;
-    GPIOC_MODER |= 1UL << 2*4;
-    GPIOC_MODER |= 1UL << 2*3;
-    GPIOC_MODER |= 1UL << 2*2;
-    GPIOC_MODER |= 1UL << 2*1;
-    GPIOC_MODER |= 1UL << 2*0;
+    // Configure RS_PIN
+    GPIOx_MODER &= ~(3UL << 2*RS_PIN); //clear
+    GPIOx_MODER |= 1UL << 2*RS_PIN; //output mode
+    GPIOx_OTYPER &= ~(3UL << RS_PIN);
+    GPIOx_OSPEEDR &= ~(3UL << 2*RS_PIN); //clear
+    GPIOx_OSPEEDR |= 3UL << 2*RS_PIN;  //high speed
+    GPIOx_PUPDR   &= ~(3UL << 2*RS_PIN); //no pull
 
-    GPIOC_OTYPER &= ~(3UL << 2*13);
-    GPIOC_OTYPER &= ~(3UL << 2*4);
-    GPIOC_OTYPER &= ~(3UL << 2*3);
-    GPIOC_OTYPER &= ~(3UL << 2*2);
-    GPIOC_OTYPER &= ~(3UL << 2*1);
-    GPIOC_OTYPER &= ~(3UL << 2*0);
+    // Configure DATA7_PIN
+    GPIOx_MODER &= ~(3UL << 2*DATA7_PIN); //clear
+    GPIOx_MODER |= 1UL << 2*DATA7_PIN; //output mode
+    GPIOx_OTYPER &= ~(3UL << DATA7_PIN);
+    GPIOx_OSPEEDR &= ~(3UL << 2*DATA7_PIN); //clear
+    GPIOx_OSPEEDR |= 3UL << 2*DATA7_PIN;  //high speed
+    GPIOx_PUPDR   &= ~(3UL << 2*DATA7_PIN); //no pull
 
-    // Clear bits OSEED registar for ports  C0 C1 C2 C3 C4 C13
-    GPIOC_OSPEEDR &= ~(3UL << 2*13);
-    GPIOC_OSPEEDR &= ~(3UL << 2*4);
-    GPIOC_OSPEEDR &= ~(3UL << 2*3);
-    GPIOC_OSPEEDR &= ~(3UL << 2*2);
-    GPIOC_OSPEEDR &= ~(3UL << 2*1);
-    GPIOC_OSPEEDR &= ~(3UL << 2*0);
+    // Configure DATA6_PIN
+    GPIOx_MODER &= ~(3UL << 2*DATA6_PIN); //clear
+    GPIOx_MODER |= 1UL << 2*DATA6_PIN; //output mode
+    GPIOx_OTYPER &= ~(3UL << DATA6_PIN);
+    GPIOx_OSPEEDR &= ~(3UL << 2*DATA6_PIN); //clear
+    GPIOx_OSPEEDR |= 3UL << 2*DATA6_PIN;  //high speed
+    GPIOx_PUPDR   &= ~(3UL << 2*DATA6_PIN); //no pull
 
-    // Set bits OSEED registar for ports  C0 C1 C2 C3 C4 C13    on high speed (2h = 10b)
-    GPIOC_OSPEEDR |= 3UL << 2*13;
-    GPIOC_OSPEEDR |= 3UL << 2*4;
-    GPIOC_OSPEEDR |= 3UL << 2*3;
-    GPIOC_OSPEEDR |= 3UL << 2*2;
-    GPIOC_OSPEEDR |= 3UL << 2*1;
-    GPIOC_OSPEEDR |= 3UL << 2*0;
+    // Configure DATA5_PIN
+    GPIOx_MODER &= ~(3UL << 2*DATA5_PIN); //clear
+    GPIOx_MODER |= 1UL << 2*DATA5_PIN; //output mode
+    GPIOx_OTYPER &= ~(3UL << DATA5_PIN);
+    GPIOx_OSPEEDR &= ~(3UL << 2*DATA5_PIN); //clear
+    GPIOx_OSPEEDR |= 3UL << 2*DATA5_PIN;  //high speed
+    GPIOx_PUPDR   &= ~(3UL << 2*DATA5_PIN); //no pull
 
-    // Clear bits PUPD registar for ports  C0 C1 C2 C3 C4 C13 - NO PULL (00b = 0)
-    GPIOC_PUPDR   &= ~(3UL << 2*13);
-    GPIOC_PUPDR   &= ~(3UL << 2*4);
-    GPIOC_PUPDR   &= ~(3UL << 2*3);
-    GPIOC_PUPDR   &= ~(3UL << 2*2);
-    GPIOC_PUPDR   &= ~(3UL << 2*1);
-    GPIOC_PUPDR   &= ~(3UL << 2*0);
+    // Configure DATA4_PIN
+    GPIOx_MODER &= ~(3UL << 2*DATA4_PIN); //clear
+    GPIOx_MODER |= 1UL << 2*DATA4_PIN; //output mode
+    GPIOx_OTYPER &= ~(3UL << DATA4_PIN);
+    GPIOx_OSPEEDR &= ~(3UL << 2*DATA4_PIN); //clear
+    GPIOx_OSPEEDR |= 3UL << 2*DATA4_PIN;  //high speed
+    GPIOx_PUPDR   &= ~(3UL << 2*DATA4_PIN); //no pull
 }
 
  void init_lcd() {
@@ -107,13 +127,13 @@ void set_position(char x, char y){
         default: pos = y;
     }
 
-    GPIOC_ODR = 0;
+    GPIOx_ODR = 0;
     send_word(0x80 | pos);
     Delay_ms(20);
 }
 
 void write_lcd(char c) {
-    GPIOC_ODR = W_RAM;
+    GPIOx_ODR = W_RAM;
     send_word(c);
     Delay_ms(2);
 }
